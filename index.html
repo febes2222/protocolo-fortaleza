@@ -1124,7 +1124,7 @@
             phaseTime: {},
             legalChecked: false,
             legalComplies: false,
-            lastActivity: performance.now(),
+            lastActivity: Date.now(),
             userName: null
         };
     }
@@ -1148,8 +1148,8 @@
             }
 
             // Verificar timeout de sesion (24h)
-            const lastActivity = state.lastActivity || performance.now();
-            if (performance.now() - lastActivity > SESSION_TIMEOUT_MS) {
+            const lastActivity = state.lastActivity || Date.now();
+            if (Date.now() - lastActivity > SESSION_TIMEOUT_MS) {
                 console.warn('Session expired');
                 state.loggedIn = false;
             }
@@ -1166,8 +1166,8 @@
         try {
             const stateCopy = { ...state };
             delete stateCopy._hash;
+            stateCopy.lastActivity = Date.now();
             stateCopy._hash = computeHash(stateCopy);
-            stateCopy.lastActivity = performance.now();
             localStorage.setItem(STORAGE_KEY, JSON.stringify(stateCopy));
         } catch(e) {
             console.error('Error saving state:', e);
@@ -1200,7 +1200,7 @@
         if (VALID_CODES.includes(code)) {
             const state = defaultState();
             state.loggedIn = true;
-            state.lastActivity = performance.now();
+            state.lastActivity = Date.now();
             saveState(state);
             showDashboard();
         } else {
