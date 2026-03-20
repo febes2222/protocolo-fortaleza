@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fase 3: Ingeniería de Seguridad | Protocolo Fortaleza</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* ═══════════════════════════════════
+           FASE 3 - INGENIERÍA DE SEGURIDAD
+           Patrón D-F-G-E (Diagnóstico-Fichas-Guia-Evaluación)
+           ═══════════════════════════════════ */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --bg: #050B14; --bg-card: #0F172A; --bg-hover: #162032;
+            --border: #1E293B; --text: #F0F6FC; --text-sec: #94A3B8; --text-muted: #64748B;
+            --blue: #3B82F6; --cyan: #06B6D4; --green: #10B981; --amber: #F59E0B;
+            --red: #EF4444; --purple: #8B5CF6;
+            --font-d: 'Outfit', sans-serif; --font-b: 'Inter', sans-serif;
+            --radius: 12px;
+        }
+        body { font-family: var(--font-b); background: var(--bg); color: var(--text); line-height: 1.6; margin: 0; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg-card); }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+
+        /* NAV */
+        .nav { display: flex; align-items: center; justify-content: space-between; padding: 14px 28px; border-bottom: 1px solid var(--border); background: rgba(15,23,42,0.9); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 50; }
+        .nav-brand { font-family: var(--font-d); font-weight: 700; font-size: 0.95rem; color: var(--text); text-decoration: none; display: flex; align-items: center; gap: 10px; }
+        .nav-brand span { color: var(--blue); }
+        .btn-back { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border: 1px solid var(--border); border-radius: 6px; color: var(--text-sec); background: none; font-family: var(--font-b); font-size: 0.82rem; cursor: pointer; text-decoration: none; transition: all 0.2s; }
+        .btn-back:hover { border-color: var(--blue); color: var(--blue); }
+        .phase-indicator { padding: 4px 12px; background: rgba(6,182,212,0.15); color: var(--cyan); border-radius: 4px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+
+        /* CONTAINER */
+        .container { max-width: 960px; margin: 0 auto; padding: 32px 24px; }
+
+        /* HEADER */
+        .phase-header { margin-bottom: 40px; }
+        .phase-tag { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: var(--cyan); margin-bottom: 8px; }
+        .phase-title { font-family: var(--font-d); font-size: 2rem; font-weight: 800; margin-bottom: 8px; }
+        .phase-subtitle { color: var(--text-sec); font-size: 0.95rem; }
+        .phase-objective { background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.2); border-radius: 8px; padding: 16px; margin-top: 16px; font-size: 0.88rem; }
+        .phase-objective strong { color: var(--blue); }
+
+        /* MODULE SECTIONS */
+        .module { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 28px; overflow: hidden; }
+        .module-header { background: linear-gradient(135deg, #162032, var(--bg-card)); padding: 20px 24px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; }
+        .module-num { width: 36px; height: 36px; background: var(--blue); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-family: var(--font-d); font-weight: 800; font-size: 1rem; flex-shrink: 0; }
+        .module-meta {}
+        .module-label { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; font-weight: 700; }
+        .module-title { font-family: var(--font-d); font-size: 1.15rem; font-weight: 700; }
+        .module-body { padding: 24px; }
+
+        /* COGNITIVE OBJECTIVE */
+        .cog-obj { background: rgba(16,185,129,0.06); border-left: 3px solid var(--green); padding: 14px 16px; border-radius: 0 6px 6px 0; margin-bottom: 20px; font-size: 0.88rem; }
+        .cog-obj strong { color: var(--green); }
+
+        /* QUIZ ITEMS */
+        .quiz-item { background: rgba(15,23,42,0.5); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 14px; overflow: hidden; }
+        .quiz-trigger { padding: 16px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: space-between; font-weight: 600; font-size: 0.9rem; }
+        .quiz-trigger:hover { background: rgba(59,130,246,0.08); }
+        .quiz-trigger::after { content: '+'; font-size: 1.2rem; color: var(--blue); transition: transform 0.2s; }
+        .quiz-item.open .quiz-trigger::after { transform: rotate(45deg); }
+        .quiz-content { display: none; padding: 16px; border-top: 1px solid var(--border); background: rgba(15,23,42,0.3); font-size: 0.88rem; color: var(--text-sec); }
+        .quiz-item.open .quiz-content { display: block; }
+        .quiz-answer { color: var(--green); font-weight: 600; margin-top: 8px; padding: 10px; background: rgba(16,185,129,0.1); border-radius: 6px; border-left: 3px solid var(--green); }
+
+        /* TABLES */
+        .data-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; margin: 16px 0; }
+        .data-table th { text-align: left; background: #1a2640; color: var(--text); padding: 12px; font-size: 0.82rem; font-weight: 600; }
+        .data-table td { padding: 12px; border-bottom: 1px solid var(--border); vertical-align: top; color: var(--text-sec); }
+        .data-table select, .data-table input { width: 100%; padding: 8px; background: var(--bg); border: 1px solid var(--border); border-radius: 4px; color: var(--text); font-family: var(--font-b); font-size: 0.85rem; }
+        .data-table select:focus, .data-table input:focus { border-color: var(--blue); outline: none; }
+
+        /* FLASHCARDS */
+        .flash-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin: 16px 0; }
+        .flashcard { background: rgba(15,23,42,0.5); border: 1px solid var(--border); border-radius: 8px; padding: 20px; cursor: pointer; transition: all 0.2s; }
+        .flashcard:hover { border-color: var(--blue); transform: translateY(-2px); }
+        .flash-q { font-weight: 600; font-size: 0.9rem; margin-bottom: 10px; }
+        .flash-a { display: none; border-top: 1px solid var(--border); padding-top: 10px; margin-top: 10px; font-size: 0.85rem; color: var(--green); }
+        .flashcard.open .flash-a { display: block; }
+        .flash-hint { font-size: 0.7rem; color: var(--text-muted); text-align: center; }
+        .flashcard.open .flash-hint { display: none; }
+
+        /* INPUT BOXES */
+        .input-group { margin-bottom: 14px; }
+        .input-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 4px; color: var(--text-sec); }
+        .input-group input, .input-group textarea, .input-group select { width: 100%; padding: 10px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-family: var(--font-b); font-size: 0.88rem; }
+        .input-group input:focus, .input-group textarea:focus { border-color: var(--blue); outline: none; }
+
+        /* COLOR CODE TABLE */
+        .color-table { width: 100%; border-collapse: collapse; margin: 16px 0; }
+        .color-table th, .color-table td { padding: 12px; border: 1px solid var(--border); }
+        .color-table th { background: #1a2640; font-weight: 600; }
+        .color-swatch { width: 40px; height: 40px; border-radius: 4px; display: inline-block; }
+        .red-swatch { background-color: #FF0000; }
+        .green-swatch { background-color: #009900; }
+        .blue-swatch { background-color: #000099; }
+
+        /* GUIDE CONCEPT BLOCK */
+        .concept-block { background: rgba(15,23,42,0.5); border: 1px solid var(--border); border-radius: 8px; padding: 20px; margin-bottom: 14px; }
+        .concept-block h4 { font-family: var(--font-d); font-size: 1rem; color: var(--blue); margin-bottom: 8px; }
+        .concept-block p { font-size: 0.88rem; color: var(--text-sec); margin-bottom: 8px; }
+        .concept-block ul { padding-left: 16px; }
+        .concept-block li { font-size: 0.85rem; color: var(--text-sec); margin-bottom: 6px; }
+
+        /* EXAM ENGINE STYLES */
+        .exam-module-header { background: linear-gradient(135deg, #991b1b, var(--bg-card)); padding: 20px 24px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; }
+        .exam-module .module-num { background: var(--red); }
+
+        .exam-progress { background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2); border-radius: 8px; padding: 16px; margin-bottom: 20px; }
+        .progress-bar { width: 100%; height: 8px; background: rgba(239,68,68,0.2); border-radius: 4px; overflow: hidden; margin-bottom: 8px; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--red), #dc2626); transition: width 0.3s; }
+        .progress-text { display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-sec); }
+
+        .exam-timer { display: flex; align-items: center; gap: 8px; padding: 12px 16px; background: rgba(239,68,68,0.1); border-left: 3px solid var(--red); border-radius: 6px; margin-bottom: 20px; font-weight: 600; }
+        .timer-icon { font-size: 1.2rem; }
+        .timer-value { color: var(--red); font-size: 1.1rem; }
+
+        .exam-question { background: rgba(15,23,42,0.5); border: 1px solid var(--border); border-radius: 8px; padding: 20px; margin-bottom: 20px; }
+        .exam-q-num { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; font-weight: 700; margin-bottom: 6px; }
+        .exam-q-text { font-weight: 600; font-size: 0.95rem; margin-bottom: 16px; }
+        .exam-q-critical { display: inline-flex; align-items: center; gap: 4px; background: rgba(239,68,68,0.15); color: var(--red); padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 700; margin-left: 8px; }
+
+        .exam-options { display: flex; flex-direction: column; gap: 10px; }
+        .exam-option { background: rgba(15,23,42,0.3); border: 2px solid var(--border); border-radius: 6px; padding: 12px 16px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 12px; font-size: 0.9rem; }
+        .exam-option:hover { border-color: var(--blue); background: rgba(59,130,246,0.08); }
+        .exam-option input[type="radio"] { cursor: pointer; accent-color: var(--blue); }
+        .exam-option.selected { border-color: var(--blue); background: rgba(59,130,246,0.15); }
+        .exam-option.correct { border-color: var(--green); background: rgba(16,185,129,0.1); }
+        .exam-option.incorrect { border-color: var(--red); background: rgba(239,68,68,0.1); }
+
+        .exam-results { background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.3); border-radius: 8px; padding: 24px; margin: 20px 0; text-align: center; }
+        .results-title { font-family: var(--font-d); font-size: 1.2rem; font-weight: 700; margin-bottom: 12px; }
+        .results-score { font-size: 2.5rem; font-weight: 800; color: var(--green); margin-bottom: 12px; }
+        .results-detail { font-size: 0.9rem; color: var(--text-sec); margin-bottom: 6px; }
+        .results-detail strong { color: var(--text); }
+        .results-feedback { background: rgba(16,185,129,0.15); padding: 16px; border-radius: 6px; margin-top: 16px; font-size: 0.88rem; color: var(--green); font-weight: 500; }
+
+        .exam-results.failed { background: rgba(239,68,68,0.1); border-color: rgba(239,68,68,0.3); }
+        .exam-results.failed .results-title { color: var(--red); }
+        .exam-results.failed .results-score { color: var(--red); }
+        .exam-results.failed .results-feedback { background: rgba(239,68,68,0.15); color: var(--red); }
+
+        .critical-error-badge { display: inline-flex; align-items: center; gap: 4px; background: rgba(239,68,68,0.2); color: var(--red); padding: 6px 10px; border-radius: 4px; font-size: 0.75rem; font-weight: 700; margin-top: 8px; }
+
+        /* COMPLETE BUTTON */
+        .btn-complete { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; max-width: 400px; margin: 32px auto; padding: 16px; background: linear-gradient(135deg, var(--green), #059669); border: none; border-radius: 8px; color: white; font-family: var(--font-b); font-size: 1rem; font-weight: 700; cursor: pointer; transition: all 0.3s; }
+        .btn-complete:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(16,185,129,0.3); }
+        .btn-complete:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+        .btn-exam-submit { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; max-width: 400px; margin: 24px auto; padding: 14px; background: linear-gradient(135deg, var(--red), #dc2626); border: none; border-radius: 8px; color: white; font-family: var(--font-b); font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: all 0.3s; }
+        .btn-exam-submit:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(239,68,68,0.3); }
+        .btn-exam-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+        .btn-retry { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; max-width: 300px; margin: 16px auto; padding: 12px; background: linear-gradient(135deg, var(--amber), #f97316); border: none; border-radius: 8px; color: white; font-family: var(--font-b); font-size: 0.9rem; font-weight: 700; cursor: pointer; transition: all 0.3s; }
+        .btn-retry:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(245,158,11,0.3); }
+
+        /* FOOTER */
+        .footer { text-align: center; padding: 24px; font-size: 0.75rem; color: var(--text-muted); border-top: 1px solid var(--border); margin-top: 40px; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        .fade-in { animation: fadeIn 0.4s ease forwards; }
+    </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+    <a href="index.html" class="btn-back">&#8592; Portal Principal</a>
+    <div class="nav-brand">PROTOCOLO <span>FORTALEZA</span></div>
+    <div class="phase-indicator">Fase 3</div>
+</nav>
+
+<div class="container">
+
+    <!-- HEADER -->
+    <div class="phase-header fade-in">
+        <div class="phase-tag">Fase 3: Ingeniería de Seguridad</div>
+        <h1 class="phase-title">Regulaciones NRD-2 Aplicadas</h1>
+        <div class="phase-subtitle">Senalizacion, Rutas de Evacuación y Especificaciones Técnicas para Egreso Seguro</div>
+        <div class="phase-objective">
+            <strong>Objetivo de Aprendizaje:</strong> Dominar la aplicacion practica de normas NRD-2 en senalizacion y diseno de rutas de evacuación. Convertir la teoria en infraestructura fisica que salva vidas.
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════
+         MÓDULO 1: DIAGNÓSTICO (D)
+         Recuperación Activa
+         ═══════════════════════════════ -->
+    <div class="module fade-in">
+        <div class="module-header">
+            <div class="module-num">D</div>
+            <div class="module-meta">
+                <div class="module-label">Módulo 01: Diagnóstico</div>
+                <div class="module-title">Cuestionario de Seguridad y Semiotica (Recuperación Activa)</div>
+            </div>
+        </div>
+        <div class="module-body">
+            <div class="cog-obj">
+                <strong>Instruccion Cognitiva:</strong> Responda cada pregunta haciendo clic para revelar. Esta seccion evalua su comprension de las normas NRD-2 sobre senalizacion y geometria del egreso. No adivine; aplique el conocimiento tecnico.
+            </div>
+
+            <div class="quiz-item" onclick="this.classList.toggle('open')">
+                <div class="quiz-trigger">Cual es la unica forma geometrica permitida para las senales de seguridad NRD-2?</div>
+                <div class="quiz-content">
+                    <div class="quiz-answer">Respuesta: CUADRADA</div>
+                    <p>Las senales NRD-2 deben ser cuadradas como figura geometrica estandar. EXCEPCION: La senal "Carga de Ocupación Maxima" es RECTANGULAR (horizonte > alto).</p>
+                </div>
+            </div>
+
+            <div class="quiz-item" onclick="this.classList.toggle('open')">
+                <div class="quiz-trigger">Que porcentaje minimo de superficie debe cubrir el color de seguridad en senales de prohibicion vs informativas?</div>
+                <div class="quiz-content">
+                    <div class="quiz-answer">Respuesta: Prohibicion (Rojo) min 35% | Informativas (Verde/Azul) min 50%</div>
+                    <p>Las senales de prohibicion (rojo, simbolo blanco) requieren minimo 35% de cobertura de color. Las senales informativas (verde para salida, azul para obligacion) requieren minimo 50% de cobertura. Esto asegura visibilidad optima en condiciones de poca iluminacion o humo.</p>
+                </div>
+            </div>
+
+            <div class="quiz-item" onclick="this.classList.toggle('open')">
+                <div class="quiz-trigger">Cual es la especificacion exacta para la instalacion de senales en paredes?</div>
+                <div class="quiz-content">
+                    <div class="quiz-answer">Respuesta: 1.00m a 1.20m del suelo, preferentemente lado izquierdo</div>
+                    <p>Las senales deben instalarse entre 1.00 y 1.20 metros de altura desde el piso terminado. La posicion preferente es el lado izquierdo de los pasillos y accesos para seguir la direccion natural de desplazamiento. Esto optimiza la velocidad de perceptibilidad.</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════
+         MÓDULO 2: FICHAS TÉCNICAS (F)
+         Repeticion Espaciada
+         ═══════════════════════════════ -->
+    <div class="module fade-in">
+        <div class="module-header">
+            <div class="module-num" style="background:var(--amber);">F</div>
+            <div class="module-meta">
+                <div class="module-label">Módulo 02: Fichas Técnicas</div>
+                <div class="module-title">Fichas Técnicas de Evacuación (Repeticion Espaciada)</div>
+            </div>
+        </div>
+        <div class="module-body">
+            <div class="cog-obj">
+                <strong>Mecanismo:</strong> Estos son los parametros criticos para el diseno seguro de rutas de evacuación. Haga clic en cada flashcard para revelar el dato tecnico y su aplicacion practica.
+            </div>
+
+            <h3 style="font-family:var(--font-d); font-size:1.05rem; margin: 20px 0 16px;">Calculos de Circulacion</h3>
+
+            <div class="flash-grid">
+                <div class="flashcard" onclick="this.classList.toggle('open')">
+                    <div class="flash-q">Ancho Minimo de Salida</div>
+                    <div class="flash-a"><strong>Si Carga de Ocupación > 50 personas: minimo 110 cm (1.10 m)</strong><br>Este es el ancho que permite el paso simultaneo de personas sin generar embotellamiento. La formula es: Ancho = (CO + personas en niveles superiores) / 60 personas por metro lineal.</div>
+                    <div class="flash-hint">Clic para revelar</div>
+                </div>
+
+                <div class="flashcard" onclick="this.classList.toggle('open')">
+                    <div class="flash-q">Accesibilidad Universal (Rampas)</div>
+                    <div class="flash-a"><strong>Pendiente maxima permitida: 8.33%</strong><br>Esto equivale a 1 metro de ascenso cada 12 metros de recorrido horizontal. Cumple con normas de acceso para personas con movilidad reducida y permite que todos evacuen a velocidad similar.</div>
+                    <div class="flash-hint">Clic para revelar</div>
+                </div>
+
+                <div class="flashcard" onclick="this.classList.toggle('open')">
+                    <div class="flash-q">Distancias Criticas de Recorrido</div>
+                    <div class="flash-a"><strong>Sin sprinklers: maximo 45 metros | Con sprinklers: maximo 60 metros</strong><br>Estos son los recorridos maximos permitidos desde cualquier punto dentro de la edificacion hasta una salida de emergencia. Los sprinklers extienden la distancia porque controlan el crecimiento del incendio.</div>
+                    <div class="flash-hint">Clic para revelar</div>
+                </div>
+
+                <div class="flashcard" onclick="this.classList.toggle('open')">
+                    <div class="flash-q">Herrajes de Puerta Tipo "Antipanico"</div>
+                    <div class="flash-a"><strong>Barra de fuerza inferior, extension minima 50% del ancho de puerta, liberacion de cerrado < 67 N</strong><br>La barra permite abrir la puerta por impulso corporal sin necesidad de giratorios. Activacion por presion, no requiere coordinacion motora fina durante panico.</div>
+                    <div class="flash-hint">Clic para revelar</div>
+                </div>
+            </div>
+
+            <h3 style="font-family:var(--font-d); font-size:1.05rem; margin: 24px 0 16px;">Codificacion de Colores NRD-2</h3>
+
+            <table class="color-table">
+                <thead>
+                    <tr>
+                        <th style="width:25%">Color</th>
+                        <th style="width:15%">Codigo Hex</th>
+                        <th style="width:60%">Significado y Aplicacion</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="color-swatch red-swatch"></span> ROJO</td>
+                        <td>#FF0000</td>
+                        <td><strong>Prohibicion y Peligro.</strong> Usado en: Boton STOP, senales de prohibicion (no fumar, no pasar), localizacion de extintores, marcaje de obstaculos en ruta de evacuación.</td>
+                    </tr>
+                    <tr>
+                        <td><span class="color-swatch green-swatch"></span> VERDE</td>
+                        <td>#009900</td>
+                        <td><strong>Condicion Segura y Salida.</strong> Usado en: Senales de salida de emergencia, senales de primeros auxilios, botiquines, puntos de reunion, direcciones de evacuación.</td>
+                    </tr>
+                    <tr>
+                        <td><span class="color-swatch blue-swatch"></span> AZUL</td>
+                        <td>#000099</td>
+                        <td><strong>Información y Obligacion.</strong> Usado en: Senales de instruccion (debe hacer), ubicacion de EPP (equipo proteccion personal), información general, areas de reunio marcadas.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3 style="font-family:var(--font-d); font-size:1.05rem; margin: 24px 0 16px;">Protocolo de Instalacion</h3>
+
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th style="width:40%">Localizacion</th>
+                        <th style="width:60%">Especificacion Técnica</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Paredes (Pasillos y Corredores)</strong></td>
+                        <td>Altura: 1.00 m a 1.20 m desde piso. Lado izquierdo preferente. Espaciamiento maximo: 15 metros entre senales consecutivas.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Puertas de Salida</strong></td>
+                        <td>Altura: 1.50 m (centro de senal). Colocacion: encima de la puerta o a un lado a nivel de la manija. Minimo 30 cm separacion de la puerta.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Cambios de Direccion</strong></td>
+                        <td>Senal obligatoria en cada esquina o giro de pasillo. Usar flechas direccionales verde sobre fondo oscuro.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Punto de Reunion Externo</strong></td>
+                        <td>Senal verde de reunion debe estar visible desde el perimetro del edificio. Minimo 100 metros de la edificacion, alejado de lineas de servicios (electricidad, gas).</td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+
+    <!-- TRANSITION: Module F to Module G -->
+    <div class="module-transition" style="background: linear-gradient(135deg, var(--blue) 0%, var(--cyan) 100%); padding: 32px; border-radius: 12px; margin: 20px 0; border: 1px solid var(--border);">
+        <p style="color: var(--text); font-size: 16px; line-height: 1.8; font-weight: 500;">Habiendo dominado las especificaciones técnicas de señalización y evacuación, ahora aplicaremos estos estándares NRD-2 en un análisis integral de seguridad.</p>
+    </div>
+
+    <!-- ═══════════════════════════════
+         MÓDULO 3: GUIA DE ESTUDIO (G)
+         Metacognicion
+         ═══════════════════════════════ -->
+    <div class="module fade-in">
+        <div class="module-header">
+            <div class="module-num" style="background:var(--green);">G</div>
+            <div class="module-meta">
+                <div class="module-label">Módulo 03: Guia de Estudio</div>
+                <div class="module-title">Estructura Profunda NRD-2 (Metacognicion)</div>
+            </div>
+        </div>
+        <div class="module-body">
+            <div class="cog-obj">
+                <strong>Objetivo Metacognitivo:</strong> Comprender la logica fundamenta de NRD-2. Estos principios conectan toda la normativa: responsabilidad, matematica del flujo, geometria del egreso. Entienda el "por que" y podra aplicar la norma en cualquier edificacion nueva.
+            </div>
+
+            <div class="concept-block">
+                <h4>I. Principio de Responsabilidad Solidaria</h4>
+                <p>La seguridad en evacuación es responsabilidad CONJUNTA:</p>
+                <ul>
+                    <li><strong>Propietario del Edificio:</strong> Provee infraestructura (puertas, rampas, senales, sprinklers).</li>
+                    <li><strong>Organizador del Evento/Operador:</strong> Entrena personal, realiza simulacros, mantiene rutas despejadas.</li>
+                    <li><strong>CONRED:</strong> Es la UNICA autoridad de inspeccion, fiscalizacion y aplicacion de multas. Autoriza o rechaza el evento.</li>
+                </ul>
+                <p style="margin-top:12px; color:var(--amber);">Advertencia Legal: Un "pase" sin cuerpo presente durante el evento puede resultar en cierre inmediato y sanciones penales.</p>
+            </div>
+
+            <div class="concept-block">
+                <h4>II. La Matematica del Flujo</h4>
+                <p><strong>Formula Principal: CO = Area / Factor de Uso</strong></p>
+                <ul>
+                    <li>CO = Carga de Ocupación (numero maximo de personas permitidas)</li>
+                    <li>Area = metros cuadrados de espacio util (excluye paredes, columnas, depositos)</li>
+                    <li>Factor de Uso = depende del tipo: oficinas (10 m2), comercio (5 m2), asambleas (1 m2)</li>
+                </ul>
+                <p style="margin-top:12px;"><strong>REGLA CRITICA: Siempre redondear HACIA ARRIBA.</strong> Si calculas 47.3 personas, son 48. Nunca hacia abajo.</p>
+                <p style="margin-top:12px;"><strong>Carga Acumulada en Pisos Multiples:</strong></p>
+                <ul>
+                    <li>Nivel 1 (Planta Baja): 100% de su CO</li>
+                    <li>Nivel 2: 50% de su CO</li>
+                    <li>Nivel 3 y superiores: 25% de su CO</li>
+                </ul>
+                <p style="margin-top:12px;">Esto se suma para calcular el ancho TOTAL de salida requerido desde la edificacion.</p>
+            </div>
+
+            <div class="concept-block">
+                <h4>III. Geometria del Egreso</h4>
+                <p><strong>Configuracion de Puertas:</strong></p>
+                <ul>
+                    <li>TODAS las puertas deben abrir HACIA AFUERA (sentido del flujo de salida).</li>
+                    <li>PROHIBIDO como salida exclusiva: puertas corredera o giratorias (pueden bloquearse en panico).</li>
+                    <li>Las puertas de emergencia deben estar senalizadas en VERDE con simbolo "hombre corriendo".</li>
+                </ul>
+                <p style="margin-top:12px;"><strong>Configuracion de Descansos (Landings):</strong></p>
+                <ul>
+                    <li>Ancho minimo: 110 cm (equivalente a puerta de 1.10 m).</li>
+                    <li>Profundidad minima: 110 cm (espacio para girar o cambiar direccion).</li>
+                    <li>Obligatorio en cambios de direccion y ante escaleras (ascenso/descenso).</li>
+                </ul>
+                <p style="margin-top:12px;"><strong>Especificaciones de Escaleras:</strong></p>
+                <ul>
+                    <li>Huella (tread, peldano horizontal): minimo 28 cm.</li>
+                    <li>Contrahuella (riser, altura entre peldanos): 10 a 18 cm (uniforme en la escalera completa).</li>
+                    <li>Pasamanos: obligatorio en ambos lados si ancho > 110 cm, a altura 85-95 cm.</li>
+                    <li>Superficie antideslizante en escaleras de emergencia.</li>
+                </ul>
+            </div>
+
+            <div class="concept-block">
+                <h4>IV. Actividad Practica: Inspeccion de Callejon Ciego</h4>
+                <p><strong>Definicion:</strong> Un "callejon ciego" (dead end) es un pasillo o espacio que termina sin conexion a una salida de emergencia.</p>
+                <p style="margin-top:8px;"><strong>Tarea:</strong> Identifica un callejon ciego en tu edificacion o institución. Verifica que cumpla:</p>
+                <div class="input-group" style="margin-top:12px;">
+                    <label>Ubicacion del callejon ciego encontrado:</label>
+                    <input type="text" placeholder="Ej: Pasillo 3ro piso, ala norte" value="">
+                </div>
+                <ul style="margin-top:12px;">
+                    <li><strong>[ ] Senal de prohibicion ROJA visible:</strong> "No hay salida por este lado" a 1.00-1.20 m de altura.</li>
+                    <li><strong>[ ] Flechas VERDES directivas:</strong> Indican la direccion correcta de salida.</li>
+                    <li><strong>[ ] Ancho suficiente:</strong> Minimo 110 cm para retroceso de ocupantes.</li>
+                    <li><strong>[ ] Iluminacion de emergencia:</strong> Funcionamiento de bateria en caso de corte electrico.</li>
+                </ul>
+                <p style="margin-top:12px; color:var(--amber);"><strong>Si no cumple alguno:</strong> Reporte a CONRED inmediatamente. Un callejon ciego mal senalizado es CAUSA DIRECTA de muertes en incendios.</p>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- VIDEO EDUCATIVO -->
+    <div class="module fade-in">
+        <div class="module-header">
+            <div class="module-num" style="background:var(--red);">&#9654;</div>
+            <div class="module-meta">
+                <div class="module-label">Material Audiovisual</div>
+                <div class="module-title">Video: NRD-2 y Senalizacion de Seguridad</div>
+            </div>
+        </div>
+        <div class="module-body">
+            <div class="cog-obj">
+                <strong>Codificacion Dual:</strong> La senalizacion es un lenguaje visual. Vea estos videos para codificar los colores, formas y ubicaciones en su memoria a largo plazo.
+            </div>
+            <div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:8px;margin-top:12px;">
+                <iframe src="https://www.youtube.com/embed/E3orxjO2Wm0" style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;" allowfullscreen></iframe>
+            </div>
+            <div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:8px;margin-top:16px;">
+                <iframe src="https://www.youtube.com/embed/DDGuPgj96_A" style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;" allowfullscreen></iframe>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════
+         MÓDULO 4: EVALUACIÓN ENGINE (E)
+         10 Preguntas de Opcion Multiple
+         ═══════════════════════════════ -->
+    <div class="module exam-module fade-in">
+        <div class="module-header exam-module-header">
+            <div class="module-num">E</div>
+            <div class="module-meta">
+                <div class="module-label">Módulo 04: Evaluación</div>
+                <div class="module-title">Motor de Evaluación NRD-2 - 10 Preguntas Criticas</div>
+            </div>
+        </div>
+        <div class="module-body">
+            <div class="cog-obj">
+                <strong>Instrucciones:</strong> Usted debe responder TODAS las preguntas para completar el examen. Se requiere 70% minimo para pasar. Las preguntas marcadas con <span style="color: var(--red); font-weight: 700;">⚠️</span> son CRITICAS para la seguridad. El tiempo se registra automaticamente. No se permite retroceso una vez que responde.
+            </div>
+
+            <div class="exam-progress">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="examProgressFill" style="width:0%"></div>
+                </div>
+                <div class="progress-text">
+                    <span>Progreso: <strong id="examQAnswered">0</strong>/10 respondidas</span>
+                    <span>Requerido: <strong>70%</strong> para pasar</span>
+                </div>
+            </div>
+
+            <div class="exam-timer">
+                <div class="timer-icon">⏱️</div>
+                <div>Tiempo de Examen:</div>
+                <div class="timer-value" id="examTimer">00:00</div>
+            </div>
+
+            <form id="examForm">
+                <!-- Q1 -->
+                <div class="exam-question">
+                    <div class="exam-q-num">Pregunta 1 de 10</div>
+                    <div class="exam-q-text">¿Cuál es el ancho mínimo de una ruta de evacuación según NRD-2?</div>
+                    <div class="exam-options">
+                        <label class="exam-option">
+                            <input type="radio" name="q1" value="a" onchange="updateProgress()">
+                            <span>a) 0.60 metros</span>
+                        </label>
+                        <label class="exam-option">
+                            <input type="radio" name="q1" value="b" onchange="updateProgress()" data-correct="true">
+                            <span>b) 0.90 metros</span>
+                        </label>
+                        <label class="exam-option">
+                            <input type="radio" name="q1" value="c" onchange="updateProgress()">
+                            <span>c) 1.50 metros</span>
+                        </label>
+                        <label class="exam-option">
+                            <input type="radio" name="q1" value="d" onchange="updateProgress()">
+                            <span>d) 2.00 metros</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Q2 CRITICAL -->
+                <div class="exam-question">
+                    <div class="exam-q-num">Pregunta 2 de 10</div>
+                    <div class="exam-q-text">¿Hacia dónde deben abrir las puertas en una ruta de evacuación? <span class="exam-q-critical">⚠️ CRÍTICA</span></div>
+                    <div class="exam-options">
+                        <label class="exam-option">
+                            <input type="radio" name="q2" value="a" onchange="updateProgress()">
+                            <span>a) Hacia adentro</span>
+                        </label>
+                        <label class="exam-option">
+                            <input type="radio" name="q2" value="b" onchange="updateProgress()" data-correct="true">
+                            <span>b) Hacia afuera, en dirección del flujo de evacuación</span>
+                        </label>
+                        <label class="exam-option">
+                            <input type="radio" name="q2" value="c" onchange="updateProgress()">
+                            <span>c) En cualquier dirección</span>
+                        </label>
+                        <label class="exam-option">
+                            <input type="radio" name="q2" value="d" onchange="updateProgress()">
+                            <span>d) Deben ser corredizas</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Q3 -->
+                <div class="exam-question">
+                    <div class="exam-q-num">Pregunta 3 de 10</div>
+                    <div class="exam-q-text">¿Qué color indica una ruta de evacuación según la señalización NRD-2?</div>
+                    <div class="exam-options">
+                        <label class="exam-option">
+                            <input type="radio" name="q3" value="a" onchange="updateProgress()">
+                            <span>a) Rojo</span>
+                        </label>
+                        <label class="exam-option">
+                            <input type="radio" name="q3" value="b" onchange="updateProgress()">
+                            <span>b) Azul</span>
+                        </label>
+                        <label class="exam-option">
+                            <input type="radio" name="q3" value="c" onchange="updateProgress()" data-correct="true">
+                            <span>c) Verde</span>
+                        </label>
+                        <label class="exam-option">
+                            <input type="radio" name="q3" value="d" onchange="updateProgress()">
+                            <span>d) Amarillo</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Q4 -->
+                <div class="exam-question">
+                    <div class="exam-q-num">Pregunta 4 de 10</div>
+                    <div class="exam-q-text">¿Cuál es la pendiente máxima permitida para una rampa de evacuación?</div>
+                    <div class="exam-options">
+                        <label class="exam-option">
+                            <input type="radio" name="q4" value="a" onchange="updateProgress()">
+                            <span>a) 5%</span>
+                        </label>
+                        <label class="exam-option">
+                            <input type="radio" name="q4" value="b" onchange="updateProgress()" data-correct="true">
+                            <span>b) 8.33%</span>
+                        </label>
+                        <label class="exam-option">
+                            <input type="radio" name="q4" value="c" onchange="updateProgress()">
+                            <span>c) 15%</span>
+                        </label>
+                        <label class="exam-option">
+                            <input type="radio" name="q4" value="d" onchange="updateProgress()">
+                            <span>d) 20%</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Q5 CRITICAL -->
+                <div class="exam-question">
+                    <div class="exam-q-num">Pregunta 5 de 10</div>
+                    <div class="exam-q-text">¿Qué es la carga de ocupación y por qué es crítica? <span class="exam-q-critical">⚠️ CRÍTICA</span></div>
+                    <div class="exam-options">
+                        <label class="exam-option">
+                            <input type="radio" name="q5" value="a" onchange="updateProgress()">
+                            <span>a) El peso del edificio</span>
+                        </label>
+                        <label class="exam-option">
+                            <input type="radio" name="q5" value="b" onchange="updateProgress()" data-correct="true">
+                            <span>b) El número máximo de personas que puede albergar un espacio de forma segura</span>
+                        </label>
+                        <label class="exam-option">
+                            <input type="radio" name="q5" value="c" onchange="updateProgress()">
+                            <span>c) La cantidad de muebles</span>
+                        </label>
+                        <label class="exam-option">
+                            <input type="radio" name="q5" value="d" onchange="updateProgress()">
+                            <span>d) El costo de mantenimiento</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Q6 -->
+                <div class="exam-question">
+                    <div class="exam-q-num">Pregunta 6 de 10</div>
+                    <div class="exam-q-text">¿A qué altura deben instalarse las señales de evacuación según NRD-2?</div>
+                    <div class="exam-options">
+                        <label class="exam-option">
+                            <input type="radio" name="q6" value="a" onchange="updateProgress()">
+                            <span>a) A nivel del piso</span>
+                        </label>
+                        <label class="exam-option">
+                            <input type="radio" name="q6" value="b" onchange="updateProgress()" data-correct="true">
+                            <span>b) Entre 2.10 y 2.40 metros de altura</span>
+                        </label>
+                        <label class="exam-option">
+                            <input type="radio" name="q6" value="c" onchange="updateProgress()">
+                            <span>c) En el techo</span>
+                        </label>
+                        <label class="exam-option">
+                            <input type="radio" name="q6" value="d" onchange="updateProgress()">
+                            <span>d) A la altura de los ojos (1.50 m)</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Q7 -->
+                <div class="exam-question">
+                    <div class="exam-q-num">Pregunta 7 de 10</div>
+                    <div class="exam-q-text">¿Qué significa una señal roja con pictograma blanco?</div>
+                    <div class="exam-options">
+                        <label class="exam-option">
+                            <input type="radio" name="q7" value="a" onchange="updateProgress()">
+                            <span>a) Ruta de evacuación</span>
+                        </label>
+                        <label class="exam-option">
+                            <input type="radio" name="q7" value="b" onchange="updateProgress()">
+                            <span>b) Información general</span>
+                        </label>
+                        <label class="exam-option">
+                            <input type="radio" name="q7" value="c" onchange="updateProgress()" data-correct="true">
+                            <span>c) Prohibición o equipo contra incendios</span>
+                        </label>
+                        <label class="exam-option">
+                            <input type="radio" name="q7" value="d" onchange="updateProgress()">
+                            <span>d) Zona segura</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Q8 CRITICAL -->
+                <div class="exam-question">
+                    <div class="exam-q-num">Pregunta 8 de 10</div>
+                    <div class="exam-q-text">¿Cuál es la distancia máxima permitida hasta una salida de emergencia? <span class="exam-q-critical">⚠️ CRÍTICA</span></div>
+                    <div class="exam-options">
+                        <label class="exam-option">
+                            <input type="radio" name="q8" value="a" onchange="updateProgress()">
+                            <span>a) 100 metros</span>
+                        </label>
+                        <label class="exam-option">
+                            <input type="radio" name="q8" value="b" onchange="updateProgress()" data-correct="true">
+                            <span>b) 60 metros (sin rociadores) o 75 metros (con rociadores)</span>
+                        </label>
+                        <label class="exam-option">
+                            <input type="radio" name="q8" value="c" onchange="updateProgress()">
+                            <span>c) 30 metros</span>
+                        </label>
+                        <label class="exam-option">
+                            <input type="radio" name="q8" value="d" onchange="updateProgress()">
+                            <span>d) No hay límite si hay señalización</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Q9 -->
+                <div class="exam-question">
+                    <div class="exam-q-num">Pregunta 9 de 10</div>
+                    <div class="exam-q-text">¿Qué tipo de herraje deben tener las puertas de emergencia?</div>
+                    <div class="exam-options">
+                        <label class="exam-option">
+                            <input type="radio" name="q9" value="a" onchange="updateProgress()">
+                            <span>a) Cerradura con llave</span>
+                        </label>
+                        <label class="exam-option">
+                            <input type="radio" name="q9" value="b" onchange="updateProgress()" data-correct="true">
+                            <span>b) Barra antipánico (push bar)</span>
+                        </label>
+                        <label class="exam-option">
+                            <input type="radio" name="q9" value="c" onchange="updateProgress()">
+                            <span>c) Manija estándar</span>
+                        </label>
+                        <label class="exam-option">
+                            <input type="radio" name="q9" value="d" onchange="updateProgress()">
+                            <span>d) Cerradura electrónica</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Q10 -->
+                <div class="exam-question">
+                    <div class="exam-q-num">Pregunta 10 de 10</div>
+                    <div class="exam-q-text">¿Qué es un pasillo sin salida (dead-end) y cuál es su límite según NRD-2?</div>
+                    <div class="exam-options">
+                        <label class="exam-option">
+                            <input type="radio" name="q10" value="a" onchange="updateProgress()">
+                            <span>a) Un pasillo decorativo, sin límite</span>
+                        </label>
+                        <label class="exam-option">
+                            <input type="radio" name="q10" value="b" onchange="updateProgress()" data-correct="true">
+                            <span>b) Un pasillo que solo tiene una salida, máximo 6 metros de profundidad</span>
+                        </label>
+                        <label class="exam-option">
+                            <input type="radio" name="q10" value="c" onchange="updateProgress()">
+                            <span>c) Un pasillo de servicio</span>
+                        </label>
+                        <label class="exam-option">
+                            <input type="radio" name="q10" value="d" onchange="updateProgress()">
+                            <span>d) Un pasillo con puertas cerradas</span>
+                        </label>
+                    </div>
+                </div>
+            </form>
+
+            <button class="btn-exam-submit" id="submitBtn" onclick="submitExam()" disabled>
+                ✓ ENVIAR EXAMEN
+            </button>
+
+            <div id="examResults"></div>
+        </div>
+    </div>
+
+    <!-- COMPLETE BUTTON -->
+    <button class="btn-complete" id="completeBtn" onclick="completePhase(3)" disabled>
+        &#10004; Completar Fase 3 y Desbloquear Fase 4
+    </button>
+
+    <div class="footer">
+        Protocolo Fortaleza v2.0 | Fase 3: Ingeniería de Seguridad NRD-2<br>
+        Motor de Evaluación con Registro de Puntuación | Recuperación Activa &bull; Repeticion Espaciada &bull; Metacognicion &bull; Evaluación
+    </div>
+</div>
+
+<script>
+// ═════════════════════════════════════
+// ═════════════════════════════════════
+// SECURITY FUNCTIONS - HASH INTEGRITY
+// ═════════════════════════════════════
+function computeHash(data) {
+    const salt = 'PF_NRD2_2026';
+    const str = salt + JSON.stringify(data);
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+        const char = str.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash;
+    }
+    return hash.toString(36);
+}
+
+function getState() {
+    try {
+        const raw = localStorage.getItem('pf_session');
+        if (!raw) return null;
+        const state = JSON.parse(raw);
+        const storedHash = state._hash;
+        const stateWithoutHash = {...state};
+        delete stateWithoutHash._hash;
+        if (computeHash(stateWithoutHash) !== storedHash) {
+            alert('⚠️ Se detectó manipulación de datos. La sesión ha sido reiniciada.');
+            localStorage.removeItem('pf_session');
+            window.location.href = 'index.html';
+            return null;
+        }
+        return state;
+    } catch(e) {
+        return null;
+    }
+}
+
+function saveState(state) {
+    try {
+        const stateToSave = {...state};
+        delete stateToSave._hash;
+        stateToSave._hash = computeHash(stateToSave);
+        localStorage.setItem('pf_session', JSON.stringify(stateToSave));
+    } catch(e) {
+        console.error('Error saving state');
+    }
+}
+
+// NAVIGATION GUARD
+// ═════════════════════════════════════
+function checkNavigation() {
+    try {
+        const session = getState();
+        const loggedIn = session && session.loggedIn === true;
+        const completedPhase2 = session && session.completedPhases && session.completedPhases.includes(2);
+
+        if (!loggedIn || !completedPhase2) {
+            alert('Acceso denegado. Debe completar Fase 2 primero.');
+            window.location.href = 'index.html';
+            return false;
+        }
+        return true;
+    } catch(e) {
+        return false;
+    }
+}
+
+// ═════════════════════════════════════
+// EXAM ENGINE
+// ═════════════════════════════════════
+let examStartTime = performance.now();
+let examAnswers = {};
+const criticalQuestions = ['q2', 'q5', 'q8'];
+
+function updateProgress() {
+    const answeredCount = document.querySelectorAll('input[type="radio"]:checked').length;
+    const totalQuestions = 10;
+    const progressPercent = (answeredCount / totalQuestions) * 100;
+
+    document.getElementById('examProgressFill').style.width = progressPercent + '%';
+    document.getElementById('examQAnswered').textContent = answeredCount;
+
+    // Enable submit button when all questions are answered
+    document.getElementById('submitBtn').disabled = answeredCount < totalQuestions;
+}
+
+function startExamTimer() {
+    examStartTime = performance.now();
+    setInterval(() => {
+        const elapsedSeconds = Math.floor((performance.now() - examStartTime) / 1000);
+        const minutes = Math.floor(elapsedSeconds / 60);
+        const seconds = elapsedSeconds % 60;
+        const timeStr = String(minutes).padStart(2, '0') + ':' + String(seconds).padStart(2, '0');
+        document.getElementById('examTimer').textContent = timeStr;
+    }, 1000);
+}
+
+function submitExam() {
+    // Collect all answers
+    const answers = {
+        q1: document.querySelector('input[name="q1"]:checked')?.value,
+        q2: document.querySelector('input[name="q2"]:checked')?.value,
+        q3: document.querySelector('input[name="q3"]:checked')?.value,
+        q4: document.querySelector('input[name="q4"]:checked')?.value,
+        q5: document.querySelector('input[name="q5"]:checked')?.value,
+        q6: document.querySelector('input[name="q6"]:checked')?.value,
+        q7: document.querySelector('input[name="q7"]:checked')?.value,
+        q8: document.querySelector('input[name="q8"]:checked')?.value,
+        q9: document.querySelector('input[name="q9"]:checked')?.value,
+        q10: document.querySelector('input[name="q10"]:checked')?.value,
+    };
+
+    // Correct answers
+    const correctAnswers = {
+        q1: 'b', q2: 'b', q3: 'c', q4: 'b', q5: 'b',
+        q6: 'b', q7: 'c', q8: 'b', q9: 'b', q10: 'b'
+    };
+
+    // Calculate score
+    let correctCount = 0;
+    let criticalErrors = 0;
+
+    for (let i = 1; i <= 10; i++) {
+        const qName = 'q' + i;
+        if (answers[qName] === correctAnswers[qName]) {
+            correctCount++;
+        } else if (criticalQuestions.includes(qName)) {
+            criticalErrors++;
+        }
+    }
+
+    const score = (correctCount / 10) * 100;
+    const elapsedSeconds = Math.floor((performance.now() - examStartTime) / 1000);
+    const passed = score >= 70 && criticalErrors === 0;
+
+    // Save to session
+    try {
+        let session = getState() || {};
+        if (!session.scores) session.scores = {};
+        session.scores.fase3 = {
+            score: Math.round(score),
+            attempts: (session.scores.fase3?.attempts || 0) + 1,
+            criticalErrors: criticalErrors,
+            timeSeconds: elapsedSeconds,
+            passed: passed,
+            timestamp: new Date().toISOString()
+        };
+
+        // Sync with index.html global metrics
+        if (!session.phaseScores) session.phaseScores = {};
+        if (!session.phaseCriticalErrors) session.phaseCriticalErrors = {};
+        if (!session.phaseTime) session.phaseTime = {};
+        session.phaseScores[3] = Math.round(score);
+        session.phaseCriticalErrors[3] = criticalErrors;
+        session.phaseTime[3] = elapsedSeconds;
+
+        saveState(session);
+    } catch(e) {
+        console.error('Error saving score:', e);
+    }
+
+    // Display results
+    displayResults(score, correctCount, criticalErrors, elapsedSeconds, passed, answers, correctAnswers);
+}
+
+function displayResults(score, correctCount, criticalErrors, timeSeconds, passed, answers, correctAnswers) {
+    const resultsDiv = document.getElementById('examResults');
+    const minutes = Math.floor(timeSeconds / 60);
+    const seconds = timeSeconds % 60;
+    const timeStr = minutes + ' min ' + seconds + ' seg';
+
+    let html = '<div class="exam-results' + (passed ? '' : ' failed') + '">';
+    html += '<div class="results-title">' + (passed ? 'EXAMEN APROBADO' : 'EXAMEN NO APROBADO') + '</div>';
+    html += '<div class="results-score">' + Math.round(score) + '%</div>';
+    html += '<div class="results-detail">Respuestas Correctas: <strong>' + correctCount + '/10</strong></div>';
+    html += '<div class="results-detail">Tiempo: <strong>' + timeStr + '</strong></div>';
+
+    if (criticalErrors > 0) {
+        html += '<div class="critical-error-badge">⚠️ ' + criticalErrors + ' error(es) en preguntas críticas</div>';
+    }
+
+    if (passed) {
+        html += '<div class="results-feedback">Felicidades. Ha demostrado dominio de los fundamentos de NRD-2. Su conocimiento sobre señalización, dimensiones críticas y configuración de evacuación es suficiente para pasar a Fase 4.</div>';
+        document.getElementById('completeBtn').disabled = false;
+    } else {
+        if (score >= 70 && criticalErrors > 0) {
+            html += '<div class="results-feedback">Has alcanzado el puntaje mínimo, pero cometiste errores en preguntas críticas que comprometen la seguridad. Debes responder correctamente TODAS las preguntas críticas para aprobar.</div>';
+        } else {
+            html += '<div class="results-feedback">Debe alcanzar 70% para pasar. Revise las preguntas marcadas como críticas (⚠️) y las fichas técnicas. Luego intente nuevamente.</div>';
+        }
+        html += '<button class="btn-retry" onclick="location.reload()">↻ Reintentar Examen</button>';
+    }
+
+    html += '</div>';
+
+    // Show answer review
+    html += '<div style="margin-top: 24px;">';
+    html += '<h3 style="font-family:var(--font-d); font-size:1rem; margin-bottom:16px;">Revisión de Respuestas</h3>';
+
+    const questions = [
+        'Ancho mínimo de ruta de evacuación',
+        'Dirección de apertura de puertas',
+        'Color de ruta de evacuación',
+        'Pendiente máxima de rampa',
+        'Definición carga de ocupación',
+        'Altura de señales de evacuación',
+        'Significado señal roja',
+        'Distancia máxima a salida',
+        'Herraje de puertas emergencia',
+        'Límite dead-end'
+    ];
+
+    for (let i = 1; i <= 10; i++) {
+        const qName = 'q' + i;
+        const isCorrect = answers[qName] === correctAnswers[qName];
+        const isCritical = criticalQuestions.includes(qName);
+
+        html += '<div style="background: rgba(15,23,42,0.5); border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-bottom: 10px; font-size: 0.85rem;">';
+        html += '<strong>Q' + i + (isCritical ? ' ⚠️' : '') + ':</strong> ' + questions[i-1];
+        html += ' <span style="color: ' + (isCorrect ? 'var(--green)' : 'var(--red)') + ';">' + (isCorrect ? '✓ Correcto' : '✗ Incorrecto') + '</span>';
+        html += '</div>';
+    }
+
+    html += '</div>';
+
+    resultsDiv.innerHTML = html;
+
+    // Disable exam form
+    document.getElementById('examForm').style.opacity = '0.5';
+    document.getElementById('examForm').style.pointerEvents = 'none';
+    document.getElementById('submitBtn').style.display = 'none';
+}
+
+function completePhase(phaseNum) {
+    try {
+        let state = getState() || {};
+        if (!state.completedPhases) state.completedPhases = [];
+        if (!state.completedPhases.includes(phaseNum)) {
+            state.completedPhases.push(phaseNum);
+        }
+        saveState(state);
+        alert('Fase ' + phaseNum + ' completada. Regresando al portal...');
+        window.location.href = 'index.html';
+    } catch(e) {
+        alert('Fase completada.');
+        window.location.href = 'index.html';
+    }
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    checkNavigation();
+    startExamTimer();
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fase 2: Arquitectura de Respuesta Institucional | Protocolo Fortaleza</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* ═══════════════════════════════════
+           FASE 2 - ARQUITECTURA INSTITUCIONAL
+           Patrón D-F-G-E (Diagnóstico-Fichas-Guia-Evaluación)
+           ═══════════════════════════════════ */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --bg: #050B14; --bg-card: #0F172A; --bg-hover: #162032;
+            --border: #1E293B; --text: #F0F6FC; --text-sec: #94A3B8; --text-muted: #64748B;
+            --blue: #3B82F6; --cyan: #06B6D4; --green: #10B981; --amber: #F59E0B;
+            --red: #EF4444; --purple: #8B5CF6;
+            --font-d: 'Outfit', sans-serif; --font-b: 'Inter', sans-serif;
+            --radius: 12px;
+        }
+        body { font-family: var(--font-b); background: var(--bg); color: var(--text); line-height: 1.6; margin: 0; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg-card); }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+
+        /* NAV */
+        .nav { display: flex; align-items: center; justify-content: space-between; padding: 14px 28px; border-bottom: 1px solid var(--border); background: rgba(15,23,42,0.9); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 50; }
+        .nav-brand { font-family: var(--font-d); font-weight: 700; font-size: 0.95rem; color: var(--text); text-decoration: none; display: flex; align-items: center; gap: 10px; }
+        .nav-brand span { color: var(--blue); }
+        .btn-back { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border: 1px solid var(--border); border-radius: 6px; color: var(--text-sec); background: none; font-family: var(--font-b); font-size: 0.82rem; cursor: pointer; text-decoration: none; transition: all 0.2s; }
+        .btn-back:hover { border-color: var(--blue); color: var(--blue); }
+        .phase-indicator { padding: 4px 12px; background: rgba(6,182,212,0.15); color: var(--cyan); border-radius: 4px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+
+        /* CONTAINER */
+        .container { max-width: 960px; margin: 0 auto; padding: 32px 24px; }
+
+        /* HEADER */
+        .phase-header { margin-bottom: 40px; }
+        .phase-tag { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: var(--cyan); margin-bottom: 8px; }
+        .phase-title { font-family: var(--font-d); font-size: 2rem; font-weight: 800; margin-bottom: 8px; }
+        .phase-subtitle { color: var(--text-sec); font-size: 0.95rem; }
+        .phase-objective { background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.2); border-radius: 8px; padding: 16px; margin-top: 16px; font-size: 0.88rem; }
+        .phase-objective strong { color: var(--blue); }
+
+        /* MODULE SECTIONS */
+        .module { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 28px; overflow: hidden; }
+        .module-header { background: linear-gradient(135deg, #162032, var(--bg-card)); padding: 20px 24px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; }
+        .module-header.exam-header { background: linear-gradient(135deg, #7C2D12, #DC2626); }
+        .module-num { width: 36px; height: 36px; background: var(--blue); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-family: var(--font-d); font-weight: 800; font-size: 1rem; flex-shrink: 0; }
+        .module-num.exam-num { background: var(--red); }
+        .module-meta {}
+        .module-label { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; font-weight: 700; }
+        .module-title { font-family: var(--font-d); font-size: 1.15rem; font-weight: 700; }
+        .module-body { padding: 24px; }
+
+        /* COGNITIVE OBJECTIVE */
+        .cog-obj { background: rgba(16,185,129,0.06); border-left: 3px solid var(--green); padding: 14px 16px; border-radius: 0 6px 6px 0; margin-bottom: 20px; font-size: 0.88rem; }
+        .cog-obj strong { color: var(--green); }
+
+        /* TABLES */
+        .data-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; margin: 16px 0; }
+        .data-table th { text-align: left; background: #1a2640; color: var(--text); padding: 12px; font-size: 0.82rem; font-weight: 600; }
+        .data-table td { padding: 12px; border-bottom: 1px solid var(--border); vertical-align: top; color: var(--text-sec); }
+        .data-table select, .data-table input { width: 100%; padding: 8px; background: var(--bg); border: 1px solid var(--border); border-radius: 4px; color: var(--text); font-family: var(--font-b); font-size: 0.85rem; }
+        .data-table select:focus, .data-table input:focus { border-color: var(--blue); outline: none; }
+
+        /* THREAT GRID */
+        .threat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin: 16px 0; }
+        .threat-card { background: rgba(15,23,42,0.5); border: 1px solid var(--border); border-radius: 8px; padding: 20px; }
+        .threat-card h4 { font-family: var(--font-d); font-size: 1rem; margin-bottom: 8px; }
+        .threat-card p { font-size: 0.85rem; color: var(--text-sec); margin-bottom: 10px; }
+        .threat-card ul { padding-left: 16px; font-size: 0.83rem; color: var(--text-sec); }
+        .threat-card li { margin-bottom: 4px; }
+        .threat-card label { font-size: 0.82rem; color: var(--text-sec); display: flex; align-items: center; gap: 6px; margin-top: 10px; cursor: pointer; }
+        .threat-card input[type="checkbox"] { accent-color: var(--green); }
+        .threat-card input[type="radio"] { accent-color: var(--blue); }
+        .border-amber { border-left: 4px solid var(--amber); }
+        .border-blue { border-left: 4px solid var(--blue); }
+        .border-red { border-left: 4px solid var(--red); }
+        .border-green { border-left: 4px solid var(--green); }
+        .border-purple { border-left: 4px solid var(--purple); }
+
+        /* FLASHCARDS */
+        .flash-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin: 16px 0; }
+        .flashcard { background: rgba(15,23,42,0.5); border: 1px solid var(--border); border-radius: 8px; padding: 20px; cursor: pointer; transition: all 0.2s; }
+        .flashcard:hover { border-color: var(--blue); transform: translateY(-2px); }
+        .flash-q { font-weight: 600; font-size: 0.9rem; margin-bottom: 10px; }
+        .flash-a { display: none; border-top: 1px solid var(--border); padding-top: 10px; margin-top: 10px; font-size: 0.85rem; color: var(--green); }
+        .flashcard.open .flash-a { display: block; }
+        .flash-hint { font-size: 0.7rem; color: var(--text-muted); text-align: center; }
+        .flashcard.open .flash-hint { display: none; }
+
+        /* INPUT BOXES */
+        .input-group { margin-bottom: 14px; }
+        .input-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 4px; color: var(--text-sec); }
+        .input-group input, .input-group textarea, .input-group select { width: 100%; padding: 10px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-family: var(--font-b); font-size: 0.88rem; }
+        .input-group input:focus, .input-group textarea:focus { border-color: var(--blue); outline: none; }
+
+        /* CHECKBOXES GRID */
+        .check-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px; margin: 12px 0; }
+        .check-grid label { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: var(--text-sec); cursor: pointer; padding: 6px 10px; border-radius: 4px; transition: background 0.2s; }
+        .check-grid label:hover { background: rgba(59,130,246,0.08); }
+        .check-grid input { accent-color: var(--green); }
+
+        /* ROLE CARDS */
+        .role-card { background: rgba(15,23,42,0.5); border: 1px solid var(--border); border-radius: 8px; padding: 20px; margin-bottom: 16px; }
+        .role-number { display: inline-block; background: var(--blue); color: white; width: 28px; height: 28px; border-radius: 50%; text-align: center; line-height: 28px; font-weight: 700; margin-bottom: 8px; font-family: var(--font-d); }
+        .role-title { font-family: var(--font-d); font-size: 1.05rem; font-weight: 700; margin-bottom: 8px; }
+        .role-subtitle { font-size: 0.82rem; color: var(--cyan); font-weight: 600; margin-bottom: 10px; }
+        .role-card p { font-size: 0.85rem; color: var(--text-sec); margin-bottom: 8px; }
+        .role-card ul { padding-left: 16px; font-size: 0.85rem; color: var(--text-sec); }
+        .role-card li { margin-bottom: 4px; }
+        .role-card strong { color: var(--green); }
+
+        /* GUIDE CONCEPT BLOCK */
+        .concept-block { background: rgba(15,23,42,0.5); border: 1px solid var(--border); border-radius: 8px; padding: 20px; margin-bottom: 14px; }
+        .concept-block h4 { font-family: var(--font-d); font-size: 1rem; color: var(--blue); margin-bottom: 8px; }
+        .concept-block p { font-size: 0.88rem; color: var(--text-sec); margin-bottom: 8px; }
+        .concept-block ul { padding-left: 16px; }
+        .concept-block li { font-size: 0.85rem; color: var(--text-sec); margin-bottom: 6px; }
+
+        /* SCENARIO BLOCK */
+        .scenario-block { background: rgba(15,23,42,0.5); border: 1px solid var(--border); border-left: 4px solid var(--amber); border-radius: 8px; padding: 20px; margin-bottom: 16px; }
+        .scenario-title { font-family: var(--font-d); font-size: 1rem; font-weight: 700; color: var(--amber); margin-bottom: 8px; }
+        .scenario-block p { font-size: 0.85rem; color: var(--text-sec); margin-bottom: 8px; }
+        .scenario-block strong { color: var(--cyan); }
+
+        /* EXAM STYLES */
+        .exam-question { background: rgba(15,23,42,0.5); border: 1px solid var(--border); border-radius: 8px; padding: 20px; margin-bottom: 20px; }
+        .exam-question.answered { border-color: var(--green); }
+        .exam-question.unanswered { border-color: var(--amber); }
+        .exam-question h4 { font-family: var(--font-d); font-size: 1rem; margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
+        .critical-badge { color: var(--red); font-size: 1.2rem; }
+        .progress-bar { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+        .progress-fill { flex: 1; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+        .progress-inner { height: 100%; background: var(--blue); transition: width 0.3s; }
+        .exam-timer { font-family: var(--font-d); font-size: 0.9rem; color: var(--text-sec); }
+        .exam-answer-group { margin-top: 14px; }
+        .exam-answer-label { display: flex; align-items: flex-start; gap: 10px; padding: 10px; margin-bottom: 8px; background: rgba(15,23,42,0.5); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; transition: all 0.2s; }
+        .exam-answer-label:hover { background: rgba(59,130,246,0.1); border-color: var(--blue); }
+        .exam-answer-label input { margin-top: 2px; accent-color: var(--blue); flex-shrink: 0; }
+        .exam-answer-label span { flex: 1; font-size: 0.88rem; color: var(--text-sec); }
+        .exam-answer-label input:checked + span { color: var(--text); font-weight: 600; }
+
+        /* RESULTS PANEL */
+        .results-panel { background: rgba(15,23,42,0.7); border: 2px solid var(--green); border-radius: 12px; padding: 28px; margin: 24px 0; text-align: center; }
+        .results-panel.fail { border-color: var(--red); }
+        .results-title { font-family: var(--font-d); font-size: 1.8rem; font-weight: 800; margin-bottom: 16px; }
+        .results-score { font-family: var(--font-d); font-size: 3rem; font-weight: 800; color: var(--green); margin: 12px 0; }
+        .results-panel.fail .results-score { color: var(--red); }
+        .results-message { font-size: 1rem; color: var(--text-sec); margin: 12px 0; }
+        .results-details { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin: 20px 0; }
+        .result-item { background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.2); border-radius: 8px; padding: 14px; }
+        .result-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; margin-bottom: 4px; }
+        .result-value { font-family: var(--font-d); font-size: 1.4rem; font-weight: 700; color: var(--blue); }
+
+        /* COMPLETE BUTTON */
+        .btn-complete { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; max-width: 400px; margin: 32px auto; padding: 16px; background: linear-gradient(135deg, var(--green), #059669); border: none; border-radius: 8px; color: white; font-family: var(--font-b); font-size: 1rem; font-weight: 700; cursor: pointer; transition: all 0.3s; }
+        .btn-complete:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(16,185,129,0.3); }
+        .btn-complete:disabled { background: linear-gradient(135deg, #6B7280, #4B5563); cursor: not-allowed; opacity: 0.6; }
+
+        /* ACTION BUTTONS */
+        .btn-submit-exam { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; max-width: 400px; margin: 24px auto; padding: 16px; background: linear-gradient(135deg, var(--blue), #2563EB); border: none; border-radius: 8px; color: white; font-family: var(--font-b); font-size: 1rem; font-weight: 700; cursor: pointer; transition: all 0.3s; }
+        .btn-submit-exam:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(59,130,246,0.3); }
+
+        .btn-retry-exam { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; max-width: 300px; margin: 16px auto; padding: 14px; background: linear-gradient(135deg, var(--amber), #D97706); border: none; border-radius: 8px; color: white; font-family: var(--font-b); font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: all 0.3s; }
+        .btn-retry-exam:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(245,158,11,0.3); }
+
+        /* FOOTER */
+        .footer { text-align: center; padding: 24px; font-size: 0.75rem; color: var(--text-muted); border-top: 1px solid var(--border); margin-top: 40px; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        .fade-in { animation: fadeIn 0.4s ease forwards; }
+    </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+    <a href="index.html" class="btn-back">&#8592; Portal Principal</a>
+    <div class="nav-brand">PROTOCOLO <span>FORTALEZA</span></div>
+    <div class="phase-indicator">Fase 2</div>
+</nav>
+
+<div class="container">
+
+    <!-- HEADER -->
+    <div class="phase-header fade-in">
+        <div class="phase-tag">Fase 2: Arquitectura Institucional</div>
+        <h1 class="phase-title">Estructura y Reglas de Evacuación</h1>
+        <div class="phase-subtitle">Arquitectura de Respuesta Institucional - Roles, Restricciones y Pentarquía</div>
+        <div class="phase-objective">
+            <strong>Objetivo de Aprendizaje:</strong> Comprender la estructura organizacional no delegable del Plan de Respuesta, aplicar restricciones normativas críticas (Duplicidad, Exclusion, Plazos), y dominar la Pentarquía como modelo de gobernanza de la respuesta.
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════
+         MÓDULO 1: DIAGNÓSTICO (D)
+         Recuperación Activa
+         ═══════════════════════════════ -->
+    <div class="module fade-in">
+        <div class="module-header">
+            <div class="module-num">D</div>
+            <div class="module-meta">
+                <div class="module-label">Módulo 01: Diagnóstico</div>
+                <div class="module-title">Estructura y Reglas de Evacuación (Recuperación Activa)</div>
+            </div>
+        </div>
+        <div class="module-body">
+            <div class="cog-obj">
+                <strong>Instruccion Cognitiva:</strong> Interiorice las restricciones duras de la Fase 2.6 para evitar invalidacion del plan. Complete cada verificacion: Duplicidad, Exclusion, Plazos.
+            </div>
+
+            <h3 style="font-family:var(--font-d); font-size:1.05rem; margin: 24px 0 12px;">1. Control de Duplicidad</h3>
+            <div class="threat-card border-red">
+                <h4>Principio: Nadie puede tener dos sombreros</h4>
+                <p><strong>Restriccion Normativa:</strong> Ningun miembro puede ser asignado simultáneamente a dos comites diferentes. Una persona = una funcion = una cadena de mando. Esto previene conflictos de autoridad y confusión operativa.</p>
+                <p style="margin-top:10px; font-size:0.85rem; color:var(--cyan);">Auditar: Verifique la matriz de asignacion de personal. ¿Hay alguien en dos comites?</p>
+                <div style="margin-top:14px;">
+                    <label style="display:flex; align-items:center; gap:8px; font-size:0.85rem;">
+                        <input type="radio" name="duplicity"> Si, detecte duplicidad (INVALIDA el plan)
+                    </label>
+                    <label style="display:flex; align-items:center; gap:8px; font-size:0.85rem;">
+                        <input type="radio" name="duplicity"> No, cada persona tiene una sola asignacion (VALIDO)
+                    </label>
+                </div>
+            </div>
+
+            <h3 style="font-family:var(--font-d); font-size:1.05rem; margin: 24px 0 12px;">2. Filtro de Exclusion</h3>
+            <div class="threat-card border-blue">
+                <h4>Principio: Restricciones de Liderazgo</h4>
+                <p><strong>Restriccion Normativa:</strong> Personal de Seguridad (escoltas, guardias) y personas bajo Renglon 189 (presupuesto para contratistas) NO PUEDEN encabezar ningun comite ni seccion operativa. Son recursos de apoyo, no liderazgo estrategico.</p>
+                <p style="margin-top:10px; font-size:0.85rem; color:var(--cyan);">Auditar: ¿Hay guardias o renglon 189 en posicion de liderazgo?</p>
+                <div style="margin-top:14px;">
+                    <label>
+                        <select style="width:100%; padding:8px; background:var(--bg); border:1px solid var(--border); border-radius:4px; color:var(--text); font-family:var(--font-b); font-size:0.85rem;">
+                            <option value="">-- Seleccione Estado de Cumplimiento --</option>
+                            <option value="compliant">Cumple: Sin liderazgo en seguridad/189</option>
+                            <option value="warning">Advertencia: Revisar asignaciones</option>
+                            <option value="violation">Violacion: Personal restringido en liderazgo</option>
+                        </select>
+                    </label>
+                </div>
+            </div>
+
+            <h3 style="font-family:var(--font-d); font-size:1.05rem; margin: 24px 0 12px;">3. Plazos de Caducidad</h3>
+            <div class="threat-card border-green">
+                <h4>Principio: Ventana de 7 dias</h4>
+                <p><strong>Restriccion Normativa:</strong> Despues de la aprobacion de Fase 2, tiene exactamente 7 dias calendario para presentar y validar Fase 3 (Planes Operativos Especificos). Pasado este plazo, Fase 2 caduca y debe reiniciarse.</p>
+                <p style="margin-top:10px; font-size:0.85rem; color:var(--cyan);">Auditar: ¿Cual es su fecha de presentacion de Fase 3?</p>
+                <div style="margin-top:14px;">
+                    <label>Fecha de Aprobacion Fase 2:</label>
+                    <input type="date" style="margin-bottom:8px;">
+                    <label>Fecha Limite de Fase 3 (Fase2 + 7 dias):</label>
+                    <input type="date" readonly style="background:rgba(15,23,42,0.7); cursor:not-allowed;">
+                    <div style="margin-top:12px;">
+                        <select style="width:100%; padding:8px; background:var(--bg); border:1px solid var(--border); border-radius:4px; color:var(--text); font-family:var(--font-b); font-size:0.85rem;">
+                            <option value="">-- Seleccione Estado --</option>
+                            <option value="on-track">En tiempo: Fase 3 dentro del plazo</option>
+                            <option value="at-risk">En Riesgo: Faltan 2 dias o menos</option>
+                            <option value="expired">Caduca: Plazo excedido</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════
+         MÓDULO 2: FICHAS TÉCNICAS (F)
+         Repeticion Espaciada
+         ═══════════════════════════════ -->
+    <div class="module fade-in">
+        <div class="module-header">
+            <div class="module-num" style="background:var(--amber);">F</div>
+            <div class="module-meta">
+                <div class="module-label">Módulo 02: Fichas Técnicas</div>
+                <div class="module-title">La Pentarquía de la Respuesta (Repeticion Espaciada)</div>
+            </div>
+        </div>
+        <div class="module-body">
+            <div class="cog-obj">
+                <strong>Mecanismo:</strong> La respuesta institucional se articula en 5 pilares. Haga clic en cada tarjeta flashcard para internalizar los roles indelegables y funciones criticas.
+            </div>
+
+            <h3 style="font-family:var(--font-d); font-size:1.05rem; margin: 24px 0 12px;">Estructura de los 5 Pilares</h3>
+
+            <div class="role-card border-blue">
+                <div class="role-number">1</div>
+                <div class="role-title">COMANDO (Estrategia)</div>
+                <div class="role-subtitle">Eje Estrategico y Politico</div>
+                <p><strong>Funcion Indelegable:</strong> Oficalizar la información publica y activar el Plan. Solo el Director del Plan tiene esta autoridad absoluta.</p>
+                <ul>
+                    <li><strong>Director del Plan (Comandante del Incidente):</strong> Oficializa información de emergencia (unica voz oficial hacia medios). Declara inicio y fin del Plan. Responsable de asignacion de recursos generales. NO PUEDE delegarse.</li>
+                    <li><strong>Coordinador del Comando:</strong> Establece el Puesto de Comando Fisico (PCF) en terreno. Mantiene comunicación con Director. Facilita la toma de decisiones estrategica.</li>
+                </ul>
+            </div>
+
+            <div class="role-card border-cyan" style="border-left:4px solid var(--cyan);">
+                <div class="role-number">2</div>
+                <div class="role-title">PLANIFICACIÓN (Inteligencia)</div>
+                <div class="role-subtitle">Eje de Información y Vulnerabilidad</div>
+                <p><strong>Funcion Critica:</strong> Recopila información, evalua la situacion y proyecta necesidades de recursos. Proporciona data estrategica para asignacion eficiente.</p>
+                <ul>
+                    <li><strong>Identificación de Poblacion Vulnerable:</strong> Personas con discapacidad, mujeres embarazadas, adultos mayores, personal hospitalizado, ninos sin acompañante.</li>
+                    <li><strong>Geoposicionamiento:</strong> Mapa de concentracion de vulnerables en sectores especificos del edificio.</li>
+                    <li><strong>Estimacion de Demanda:</strong> Calculo de recursos medicos, psicologicos y de asistencia necesarios.</li>
+                </ul>
+            </div>
+
+            <div class="role-card border-red">
+                <div class="role-number">3</div>
+                <div class="role-title">OPERACIONES (Ejecucion)</div>
+                <div class="role-subtitle">Eje Tactico y de Accion Fisica</div>
+                <p><strong>Funcion Critica:</strong> Transforma datos en acciones fisicas. Busqueda, Rescate, Control de Incendios, Evacuación.</p>
+                <ul>
+                    <li><strong>Busqueda y Rescate:</strong> Personal capacitado en técnicas de excarcelacion. Requiere coordinacion con Logística para herramientas.</li>
+                    <li><strong>Control de Incendios:</strong> Equipos de respuesta rapida con extintores. Conexion a sistemas de supresion automatica.</li>
+                    <li><strong>Evacuación Asistida:</strong> Guia de personal vulnerable. Puntos de reunion preestablecidos.</li>
+                </ul>
+            </div>
+
+            <div class="role-card" style="border-left:4px solid #F59E0B;">
+                <div class="role-number">4</div>
+                <div class="role-title">LOGÍSTICA (Soporte)</div>
+                <div class="role-subtitle">Eje de Recursos y Sostenibilidad</div>
+                <p><strong>Funcion Critica:</strong> Provision de suministros. Agua para equipos de rescate es ESENCIAL (hipertermia en bomberos).</p>
+                <ul>
+                    <li><strong>Suministro de Agua:</strong> Abastecimiento continuo para brigadas de combate. Minimo 2-3 litros por persona por hora. CRITICO.</li>
+                    <li><strong>Combustible y Energia:</strong> Mantenimiento de grupos electrogenos, bombas, sistemas de comunicación.</li>
+                    <li><strong>Medicamentos de Emergencia:</strong> Suministros basicos, primeros auxilios, analgesicos.</li>
+                    <li><strong>Materiales de Consumo:</strong> Vendajes, desinfectantes, mantas termicas.</li>
+                </ul>
+            </div>
+
+            <div class="role-card" style="border-left:4px solid var(--purple);">
+                <div class="role-number">5</div>
+                <div class="role-title">FINANZAS (Gobernanza)</div>
+                <div class="role-subtitle">Eje de Control Administrativo</div>
+                <p><strong>Funcion Critica:</strong> Gestión presupuestaria y adquisicion rapida de recursos en emergencia.</p>
+                <ul>
+                    <li><strong>Presupuesto de Contingencia:</strong> Fondos preaprobados para compra rapida de suministros (agua embotellada, fuel, medicinas).</li>
+                    <li><strong>Rendicion de Cuentas:</strong> Registro de gastos en emergencia. Transparencia fiscal.</li>
+                    <li><strong>Coordinacion con Proveedores:</strong> Convenios preestablecidos para adquisicion rapida (sin burocratización).</li>
+                </ul>
+            </div>
+
+            <h3 style="font-family:var(--font-d); font-size:1.05rem; margin: 24px 12px 12px;">Flashcards de Repaso: Conceptos Indelegables</h3>
+
+            <div class="flash-grid">
+                <div class="flashcard" onclick="this.classList.toggle('open')">
+                    <div class="flash-q">¿Quien puede Oficalizar la información en una emergencia?</div>
+                    <div class="flash-a"><strong>SOLO el Comandante del Incidente (Director del Plan).</strong> Es la unica voz oficial hacia prensa, publico y autoridades. Evita comunicación contradictoria. Indelegable.</div>
+                    <div class="flash-hint">Clic para revelar</div>
+                </div>
+                <div class="flashcard" onclick="this.classList.toggle('open')">
+                    <div class="flash-q">¿Cual es la funcion critica de Planificación?</div>
+                    <div class="flash-a"><strong>Recopilar información, evaluar la situacion y proyectar necesidades.</strong> Identifica poblacion vulnerable y proporciona data para asignacion eficiente de recursos.</div>
+                    <div class="flash-hint">Clic para revelar</div>
+                </div>
+                <div class="flashcard" onclick="this.classList.toggle('open')">
+                    <div class="flash-q">¿Por que el agua es esencial en Logística?</div>
+                    <div class="flash-a"><strong>Previene hipertermia en bomberos.</strong> Minimo 2-3 litros/persona/hora. Sin agua, los equipos de rescate colapsan en 2-3 horas. Indispensable para sostenibilidad operativa.</div>
+                    <div class="flash-hint">Clic para revelar</div>
+                </div>
+                <div class="flashcard" onclick="this.classList.toggle('open')">
+                    <div class="flash-q">¿Que hace la Pentarquía?</div>
+                    <div class="flash-a"><strong>5 pilares independientes pero coordinados:</strong> Comando (estrategia), Planificación (datos), Operaciones (accion), Logística (recursos), Finanzas (control). Juntos conforman un sistema robusto.</div>
+                    <div class="flash-hint">Clic para revelar</div>
+                </div>
+                <div class="flashcard" onclick="this.classList.toggle('open')">
+                    <div class="flash-q">¿Quien NO puede ser Comandante del Incidente?</div>
+                    <div class="flash-a"><strong>Personal de Seguridad (escoltas) ni Renglon 189.</strong> Filtro de Exclusion. Solo personal administrativo/profesional de rango estrategico. Su rotacion y condiciones contractuales comprometen continuidad.</div>
+                    <div class="flash-hint">Clic para revelar</div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- TRANSITION: Module F to Module G -->
+    <div class="module-transition" style="background: linear-gradient(135deg, var(--blue) 0%, var(--cyan) 100%); padding: 32px; border-radius: 12px; margin: 20px 0; border: 1px solid var(--border);">
+        <p style="color: var(--text); font-size: 16px; line-height: 1.8; font-weight: 500;">Con la estructura de mando definida y los roles asignados, el siguiente paso es aplicar estos conocimientos en escenarios reales de toma de decisiones.</p>
+    </div>
+
+    <!-- ═══════════════════════════════
+         MÓDULO 3: GUIA DE ESTUDIO (G)
+         Metacognicion
+         ═══════════════════════════════ -->
+    <div class="module fade-in">
+        <div class="module-header">
+            <div class="module-num" style="background:var(--green);">G</div>
+            <div class="module-meta">
+                <div class="module-label">Módulo 03: Guia de Estudio</div>
+                <div class="module-title">Simulación Cognitiva de Alta Fidelidad (Metacognicion)</div>
+            </div>
+        </div>
+        <div class="module-body">
+            <div class="cog-obj">
+                <strong>Objetivo Metacognitivo:</strong> Ejercicios de Toma de Decision bajo Incertidumbre. Aplicar restricciones normativas y la Pentarquía para resolver conflictos operativos reales.
+            </div>
+
+            <h3 style="font-family:var(--font-d); font-size:1.05rem; margin: 24px 0 12px;">Escenario A: El Silencio del Lider</h3>
+            <div class="scenario-block">
+                <div class="scenario-title">Situacion</div>
+                <p>Se activa una evacuación de emergencia. El Comandante del Incidente (unica voz oficial) es incontactable en su despacho. Prensa exige comunicado en 15 minutos. OIP (Oficina de Información Publica) tiene datos de la emergencia. El Coordinador de Comando presiona para emitir información urgente.</p>
+                <div style="margin-top:12px; padding:12px; background:rgba(59,130,246,0.08); border-left:3px solid var(--blue); border-radius:4px;">
+                    <p style="font-size:0.85rem; color:var(--text);"><strong>Decision Requerida:</strong> ¿Que autoridad tiene para emitir el comunicado de emergencia?</p>
+                </div>
+                <div style="margin-top:12px;">
+                    <label style="display:flex; align-items:center; gap:8px; font-size:0.85rem;">
+                        <input type="radio" name="scenario-a"> OIP puede emitir información (rapidez)
+                    </label>
+                    <label style="display:flex; align-items:center; gap:8px; font-size:0.85rem;">
+                        <input type="radio" name="scenario-a"> Coordinador emite a nombre del Comandante
+                    </label>
+                    <label style="display:flex; align-items:center; gap:8px; font-size:0.85rem;">
+                        <input type="radio" name="scenario-a"> ESPERAR al Comandante para oficalizar (CORRECTO)
+                    </label>
+                    <label style="display:flex; align-items:center; gap:8px; font-size:0.85rem;">
+                        <input type="radio" name="scenario-a"> Activar protocolo de Delegacion de Autoridad
+                    </label>
+                </div>
+                <div style="margin-top:14px; padding:12px; background:rgba(16,185,129,0.08); border-left:3px solid var(--green); border-radius:4px;">
+                    <p style="font-size:0.82rem;"><strong>Respuesta Correcta:</strong> Esperar al Comandante. La Oficializacion es indelegable. En el interin, pueden preparar comunicado en borrador, pero NO publicar. Este es el <strong>Bloqueo Normativo</strong>: La ley exige que solo El Comandante del Incidente oficialice. Incumplir genera responsabilidad juridica.</p>
+                </div>
+            </div>
+
+            <h3 style="font-family:var(--font-d); font-size:1.05rem; margin: 24px 0 12px;">Escenario B: El Cuello de Botella Operativo</h3>
+            <div class="scenario-block">
+                <div class="scenario-title">Situacion</div>
+                <p>Se detecta un incendio en el sotano. Equipos de Operaciones acceden al area pero encuentran: (1) Extintores vacios (no se recargan desde hace 6 meses), (2) No hay agua disponible en la zona, (3) Presupuesto para recarga fue bloqueado por administracion.</p>
+                <div style="margin-top:12px; padding:12px; background:rgba(59,130,246,0.08); border-left:3px solid var(--blue); border-radius:4px;">
+                    <p style="font-size:0.85rem; color:var(--text);"><strong>Analisis Requerido:</strong> ¿Cual fue el error original y en que seccion ocurrio?</p>
+                </div>
+                <div style="margin-top:12px;">
+                    <label style="display:flex; align-items:center; gap:8px; font-size:0.85rem;">
+                        <input type="radio" name="scenario-b"> Fallo de Operaciones: no verificaban extintores
+                    </label>
+                    <label style="display:flex; align-items:center; gap:8px; font-size:0.85rem;">
+                        <input type="radio" name="scenario-b"> Fallo de Logística: no reabastecia suministros
+                    </label>
+                    <label style="display:flex; align-items:center; gap:8px; font-size:0.85rem;">
+                        <input type="radio" name="scenario-b"> Fallo de Finanzas: bloqueo presupuestario
+                    </label>
+                    <label style="display:flex; align-items:center; gap:8px; font-size:0.85rem;">
+                        <input type="radio" name="scenario-b"> Fallo en cadena (Operaciones->Logística->Finanzas)
+                    </label>
+                </div>
+                <div style="margin-top:14px; padding:12px; background:rgba(16,185,129,0.08); border-left:3px solid var(--green); border-radius:4px;">
+                    <p style="font-size:0.82rem;"><strong>Respuesta Correcta:</strong> Fallo en cadena interseccional. Operaciones debio avisar a Logística que extintores se vaciaban. Logística debio solicitar recarga a Finanzas. Finanzas debio autorizar (fue error administrativo). Un punto de fracaso en la cadena impacta toda la Pentarquía. La <strong>Robustez</strong> requiere verificaciones cruzadas entre pilares.</p>
+                </div>
+            </div>
+
+            <h3 style="font-family:var(--font-d); font-size:1.05rem; margin: 24px 0 12px;">Conclusiones de la Fase 2</h3>
+
+            <div class="concept-block">
+                <h4>I. Robustez</h4>
+                <p>La arquitectura del Plan solo es robusta si TODOS los 5 pilares funcionan. Un fallo aislado en cualquiera desmorona la respuesta. No existen "pilares secundarios": cada uno es critico.</p>
+            </div>
+
+            <div class="concept-block">
+                <h4>II. Resilencia</h4>
+                <p>Cuando fallan recursos (extintores vacios), la cadena DEBE redireccionarse: si Logística falla, Operaciones activa protocolos alternativos. Si Finanzas bloquea, el Comandante tiene autoridad de sobreposicion. La Pentarquía es un sistema auto-correctivo, si se respeta la jerarquia.</p>
+            </div>
+
+            <div class="concept-block">
+                <h4>III. Disciplina Normativa</h4>
+                <p>Ninguna persona puede desafiar la estructura (no duplicidad). Ninguna restriccion es "recomendacion": el Bloqueo Normativo es absoluto. El Plan Fortaleza es valido SOLO si respeta estas reglas arquitectonicas. Violarlas lo invalida completamente.</p>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════
+         MÓDULO E: EVALUACIÓN
+         Examen de Competencia
+         ═══════════════════════════════ -->
+    <div class="module fade-in" id="examModule">
+        <div class="module-header exam-header">
+            <div class="module-num exam-num">E</div>
+            <div class="module-meta">
+                <div class="module-label">Módulo E: Evaluación</div>
+                <div class="module-title">Examen de Competencia - Pentarquía y Restricciones</div>
+            </div>
+        </div>
+        <div class="module-body">
+            <div class="cog-obj">
+                <strong>Instruccion del Examen:</strong> Responda todas las 10 preguntas basadas en los contenidos de esta fase. Se requiere 70% de aciertos (7 puntos) para completar la fase. Las preguntas marcadas con ⚠️ son criticas para la seguridad de vida.
+            </div>
+
+            <div class="progress-bar">
+                <div>
+                    <span id="progressText" style="font-size:0.9rem; color:var(--text-sec);">Pregunta 0 de 10</span>
+                </div>
+                <div class="progress-fill">
+                    <div class="progress-inner" id="progressInner" style="width:0%"></div>
+                </div>
+                <div class="exam-timer">Tiempo: <span id="timerDisplay">0:00</span></div>
+            </div>
+
+            <div id="examContent">
+                <!-- Pregunta 1 -->
+                <div class="exam-question" id="q1">
+                    <h4>
+                        <span style="font-family:var(--font-d);">Pregunta 1 de 10</span>
+                    </h4>
+                    <p style="font-size:0.95rem; margin-top:8px; color:var(--text);">¿Cuántos pilares conforman la Pentarquía de Mando según el protocolo NRD-2?</p>
+                    <div class="exam-answer-group">
+                        <label class="exam-answer-label">
+                            <input type="radio" name="q1" value="a"> <span>a) 3</span>
+                        </label>
+                        <label class="exam-answer-label">
+                            <input type="radio" name="q1" value="b"> <span>b) 5</span>
+                        </label>
+                        <label class="exam-answer-label">
+                            <input type="radio" name="q1" value="c"> <span>c) 7</span>
+                        </label>
+                        <label class="exam-answer-label">
+                            <input type="radio" name="q1" value="d"> <span>d) 10</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Pregunta 2 - CRITICAL -->
+                <div class="exam-question" id="q2">
+                    <h4>
+                        <span class="critical-badge">⚠️</span>
+                        <span style="font-family:var(--font-d);">Pregunta 2 de 10 (CRÍTICA)</span>
+                    </h4>
+                    <p style="font-size:0.95rem; margin-top:8px; color:var(--text);">¿Quién es el responsable máximo de la toma de decisiones en una emergencia institucional?</p>
+                    <div class="exam-answer-group">
+                        <label class="exam-answer-label">
+                            <input type="radio" name="q2" value="a"> <span>a) El jefe de Logística</span>
+                        </label>
+                        <label class="exam-answer-label">
+                            <input type="radio" name="q2" value="b"> <span>b) El coordinador de Operaciones</span>
+                        </label>
+                        <label class="exam-answer-label">
+                            <input type="radio" name="q2" value="c"> <span>c) El Comandante del Incidente</span>
+                        </label>
+                        <label class="exam-answer-label">
+                            <input type="radio" name="q2" value="d"> <span>d) El jefe de Finanzas</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Pregunta 3 -->
+                <div class="exam-question" id="q3">
+                    <h4>
+                        <span style="font-family:var(--font-d);">Pregunta 3 de 10</span>
+                    </h4>
+                    <p style="font-size:0.95rem; margin-top:8px; color:var(--text);">¿Qué función es indelegable del Comandante del Incidente?</p>
+                    <div class="exam-answer-group">
+                        <label class="exam-answer-label">
+                            <input type="radio" name="q3" value="a"> <span>a) Comprar suministros</span>
+                        </label>
+                        <label class="exam-answer-label">
+                            <input type="radio" name="q3" value="b"> <span>b) Autorizar comunicaciones oficiales y declarar emergencia</span>
+                        </label>
+                        <label class="exam-answer-label">
+                            <input type="radio" name="q3" value="c"> <span>c) Coordinar voluntarios</span>
+                        </label>
+                        <label class="exam-answer-label">
+                            <input type="radio" name="q3" value="d"> <span>d) Registrar gastos</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Pregunta 4 -->
+                <div class="exam-question" id="q4">
+                    <h4>
+                        <span style="font-family:var(--font-d);">Pregunta 4 de 10</span>
+                    </h4>
+                    <p style="font-size:0.95rem; margin-top:8px; color:var(--text);">¿Cuál es la regla sobre la doble asignación de personal en comités?</p>
+                    <div class="exam-answer-group">
+                        <label class="exam-answer-label">
+                            <input type="radio" name="q4" value="a"> <span>a) Es recomendable para eficiencia</span>
+                        </label>
+                        <label class="exam-answer-label">
+                            <input type="radio" name="q4" value="b"> <span>b) Está prohibida: nadie puede estar en dos comités simultáneamente</span>
+                        </label>
+                        <label class="exam-answer-label">
+                            <input type="radio" name="q4" value="c"> <span>c) Solo aplica a directivos</span>
+                        </label>
+                        <label class="exam-answer-label">
+                            <input type="radio" name="q4" value="d"> <span>d) Se permite en emergencias</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Pregunta 5 - CRITICAL -->
+                <div class="exam-question" id="q5">
+                    <h4>
+                        <span class="critical-badge">⚠️</span>
+                        <span style="font-family:var(--font-d);">Pregunta 5 de 10 (CRÍTICA)</span>
+                    </h4>
+                    <p style="font-size:0.95rem; margin-top:8px; color:var(--text);">¿Qué sucede si el Comandante del Incidente queda incapacitado durante una emergencia?</p>
+                    <div class="exam-answer-group">
+                        <label class="exam-answer-label">
+                            <input type="radio" name="q5" value="a"> <span>a) Se suspenden las operaciones</span>
+                        </label>
+                        <label class="exam-answer-label">
+                            <input type="radio" name="q5" value="b"> <span>b) Asume automáticamente el siguiente en la cadena de mando según protocolo</span>
+                        </label>
+                        <label class="exam-answer-label">
+                            <input type="radio" name="q5" value="c"> <span>c) Se espera a que se recupere</span>
+                        </label>
+                        <label class="exam-answer-label">
+                            <input type="radio" name="q5" value="d"> <span>d) Cada pilar actúa independientemente</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Pregunta 6 -->
+                <div class="exam-question" id="q6">
+                    <h4>
+                        <span style="font-family:var(--font-d);">Pregunta 6 de 10</span>
+                    </h4>
+                    <p style="font-size:0.95rem; margin-top:8px; color:var(--text);">¿Cuál es la función principal del pilar de Planificación?</p>
+                    <div class="exam-answer-group">
+                        <label class="exam-answer-label">
+                            <input type="radio" name="q6" value="a"> <span>a) Ejecutar las operaciones de rescate</span>
+                        </label>
+                        <label class="exam-answer-label">
+                            <input type="radio" name="q6" value="b"> <span>b) Recopilar información, evaluar situación y proyectar necesidades</span>
+                        </label>
+                        <label class="exam-answer-label">
+                            <input type="radio" name="q6" value="c"> <span>c) Gestionar los recursos financieros</span>
+                        </label>
+                        <label class="exam-answer-label">
+                            <input type="radio" name="q6" value="d"> <span>d) Comunicar a los medios</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Pregunta 7 -->
+                <div class="exam-question" id="q7">
+                    <h4>
+                        <span style="font-family:var(--font-d);">Pregunta 7 de 10</span>
+                    </h4>
+                    <p style="font-size:0.95rem; margin-top:8px; color:var(--text);">¿Qué pilar se encarga del suministro de equipos, alimentos y transporte?</p>
+                    <div class="exam-answer-group">
+                        <label class="exam-answer-label">
+                            <input type="radio" name="q7" value="a"> <span>a) Comando</span>
+                        </label>
+                        <label class="exam-answer-label">
+                            <input type="radio" name="q7" value="b"> <span>b) Planificación</span>
+                        </label>
+                        <label class="exam-answer-label">
+                            <input type="radio" name="q7" value="c"> <span>c) Operaciones</span>
+                        </label>
+                        <label class="exam-answer-label">
+                            <input type="radio" name="q7" value="d"> <span>d) Logística</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Pregunta 8 -->
+                <div class="exam-question" id="q8">
+                    <h4>
+                        <span style="font-family:var(--font-d);">Pregunta 8 de 10</span>
+                    </h4>
+                    <p style="font-size:0.95rem; margin-top:8px; color:var(--text);">¿Cuál es el plazo máximo para conformar el comité de respuesta después de la primera fase?</p>
+                    <div class="exam-answer-group">
+                        <label class="exam-answer-label">
+                            <input type="radio" name="q8" value="a"> <span>a) 30 días</span>
+                        </label>
+                        <label class="exam-answer-label">
+                            <input type="radio" name="q8" value="b"> <span>b) 7 días</span>
+                        </label>
+                        <label class="exam-answer-label">
+                            <input type="radio" name="q8" value="c"> <span>c) 24 horas</span>
+                        </label>
+                        <label class="exam-answer-label">
+                            <input type="radio" name="q8" value="d"> <span>d) No tiene plazo</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Pregunta 9 - CRITICAL -->
+                <div class="exam-question" id="q9">
+                    <h4>
+                        <span class="critical-badge">⚠️</span>
+                        <span style="font-family:var(--font-d);">Pregunta 9 de 10 (CRÍTICA)</span>
+                    </h4>
+                    <p style="font-size:0.95rem; margin-top:8px; color:var(--text);">¿Por qué el personal de seguridad privada no puede liderar comités de emergencia?</p>
+                    <div class="exam-answer-group">
+                        <label class="exam-answer-label">
+                            <input type="radio" name="q9" value="a"> <span>a) Porque no tienen experiencia</span>
+                        </label>
+                        <label class="exam-answer-label">
+                            <input type="radio" name="q9" value="b"> <span>b) Porque su rotación y condiciones contractuales comprometen la continuidad del comité</span>
+                        </label>
+                        <label class="exam-answer-label">
+                            <input type="radio" name="q9" value="c"> <span>c) Porque no hablan español</span>
+                        </label>
+                        <label class="exam-answer-label">
+                            <input type="radio" name="q9" value="d"> <span>d) Porque la ley lo prohíbe explícitamente</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Pregunta 10 -->
+                <div class="exam-question" id="q10">
+                    <h4>
+                        <span style="font-family:var(--font-d);">Pregunta 10 de 10</span>
+                    </h4>
+                    <p style="font-size:0.95rem; margin-top:8px; color:var(--text);">¿Cuál es el propósito del filtro de exclusión en la conformación del comité?</p>
+                    <div class="exam-answer-group">
+                        <label class="exam-answer-label">
+                            <input type="radio" name="q10" value="a"> <span>a) Eliminar a empleados nuevos</span>
+                        </label>
+                        <label class="exam-answer-label">
+                            <input type="radio" name="q10" value="b"> <span>b) Asegurar que personas con conflictos de interés o limitaciones contractuales no ocupen puestos críticos</span>
+                        </label>
+                        <label class="exam-answer-label">
+                            <input type="radio" name="q10" value="c"> <span>c) Reducir el tamaño del comité</span>
+                        </label>
+                        <label class="exam-answer-label">
+                            <input type="radio" name="q10" value="d"> <span>d) Cumplir con una formalidad</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn-submit-exam" onclick="submitExam()" id="submitBtn">
+                ✓ Enviar Examen
+            </button>
+
+            <!-- RESULTS PANEL (hidden until submitted) -->
+            <div id="resultsPanel" style="display:none;">
+                <div class="results-panel" id="resultsPanelContent">
+                    <div class="results-title" id="resultsTitle">Examen Completado</div>
+                    <div class="results-score" id="resultsScore">0%</div>
+                    <div class="results-message" id="resultsMessage">Cargando resultados...</div>
+                    <div class="results-details">
+                        <div class="result-item">
+                            <div class="result-label">Aciertos</div>
+                            <div class="result-value" id="resultsCorrect">0/10</div>
+                        </div>
+                        <div class="result-item">
+                            <div class="result-label">Errores Críticos</div>
+                            <div class="result-value" id="resultsCritical">0</div>
+                        </div>
+                        <div class="result-item">
+                            <div class="result-label">Tiempo Empleado</div>
+                            <div class="result-value" id="resultsTime">0:00</div>
+                        </div>
+                        <div class="result-item">
+                            <div class="result-label">Requerimiento</div>
+                            <div class="result-value" style="color:var(--green);">70%</div>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn-retry-exam" onclick="retryExam()" id="retryBtn" style="display:none;">
+                    ↺ Reintentar Examen
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- VIDEO EDUCATIVO -->
+    <div class="module fade-in">
+        <div class="module-header">
+            <div class="module-num" style="background:var(--red);">&#9654;</div>
+            <div class="module-meta">
+                <div class="module-label">Material Audiovisual</div>
+                <div class="module-title">Video: Estructura del Plan de Evacuación</div>
+            </div>
+        </div>
+        <div class="module-body">
+            <div class="cog-obj">
+                <strong>Codificacion Dual:</strong> Refuerce la comprension de la Pentarquía de Mando mediante el canal visual-auditivo.
+            </div>
+            <div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:8px;margin-top:12px;">
+                <iframe src="https://www.youtube.com/embed/sAR375fRyOU" style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;" allowfullscreen></iframe>
+            </div>
+            <div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:8px;margin-top:16px;">
+                <iframe src="https://www.youtube.com/embed/ccpEuBltRvU" style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;" allowfullscreen></iframe>
+            </div>
+        </div>
+    </div>
+
+    <!-- COMPLETE BUTTON -->
+    <button class="btn-complete" onclick="completePhase(2)" id="completeBtn" disabled>
+        &#10004; Completar Fase 2 y Desbloquear Fase 3
+    </button>
+
+    <div class="footer">
+        Protocolo Fortaleza v2.0 | Fase 2: Arquitectura de Respuesta Institucional<br>
+        Basado en evidencia: Recuperación Activa • Repeticion Espaciada • Metacognicion • Evaluación 70% Rule
+    </div>
+</div>
+
+<script>
+// ════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════
+// SECURITY FUNCTIONS - HASH INTEGRITY
+// ════════════════════════════════════════════════════════════
+function computeHash(data) {
+    const salt = 'PF_NRD2_2026';
+    const str = salt + JSON.stringify(data);
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+        const char = str.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash;
+    }
+    return hash.toString(36);
+}
+
+function getState() {
+    try {
+        const raw = localStorage.getItem('pf_session');
+        if (!raw) return null;
+        const state = JSON.parse(raw);
+        const storedHash = state._hash;
+        const stateWithoutHash = {...state};
+        delete stateWithoutHash._hash;
+        if (computeHash(stateWithoutHash) !== storedHash) {
+            alert('⚠️ Se detectó manipulación de datos. La sesión ha sido reiniciada.');
+            localStorage.removeItem('pf_session');
+            window.location.href = 'index.html';
+            return null;
+        }
+        return state;
+    } catch(e) {
+        return null;
+    }
+}
+
+function saveState(state) {
+    try {
+        const stateToSave = {...state};
+        delete stateToSave._hash;
+        stateToSave._hash = computeHash(stateToSave);
+        localStorage.setItem('pf_session', JSON.stringify(stateToSave));
+    } catch(e) {
+        console.error('Error saving state');
+    }
+}
+
+// NAVIGATION GUARD - LOGIN & PHASE COMPLETION CHECK
+// ════════════════════════════════════════════════════════════
+function checkLoginAndPhase() {
+    const state = getState();
+
+    if (!state || !state.loggedIn) {
+        alert('Acceso denegado. Debe iniciar sesión primero.');
+        window.location.href = 'index.html';
+        return false;
+    }
+
+    if (!state.completedPhases || !state.completedPhases.includes(1)) {
+        alert('Debe completar Fase 1 antes de acceder a Fase 2.');
+        window.location.href = 'index.html';
+        return false;
+    }
+
+    return true;
+}
+
+// ════════════════════════════════════════════════════════════
+// EXAM ENGINE
+// ════════════════════════════════════════════════════════════
+const examAnswers = {
+    q1: 'b',  // 5 pilares
+    q2: 'c',  // Comandante del Incidente (CRITICAL)
+    q3: 'b',  // Autorizar comunicaciones y declarar emergencia
+    q4: 'b',  // Está prohibida
+    q5: 'b',  // Asume siguiente en cadena de mando (CRITICAL)
+    q6: 'b',  // Recopilar, evaluar, proyectar
+    q7: 'd',  // Logística
+    q8: 'b',  // 7 días
+    q9: 'b',  // Rotación y condiciones contractuales (CRITICAL)
+    q10: 'b'  // Asegurar personas sin conflictos de interés
+};
+
+const criticalQuestions = ['q2', 'q5', 'q9'];
+
+let examStartTime = null;
+let timerInterval = null;
+
+function startExamTimer() {
+    examStartTime = performance.now();
+    timerInterval = setInterval(updateTimer, 1000);
+}
+
+function stopExamTimer() {
+    if (timerInterval) clearInterval(timerInterval);
+}
+
+function updateTimer() {
+    const elapsed = Math.floor((performance.now() - examStartTime) / 1000);
+    const minutes = Math.floor(elapsed / 60);
+    const seconds = elapsed % 60;
+    const display = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    document.getElementById('timerDisplay').textContent = display;
+}
+
+function getElapsedSeconds() {
+    if (!examStartTime) return 0;
+    return Math.floor((performance.now() - examStartTime) / 1000);
+}
+
+function validateAllQuestionsAnswered() {
+    for (let i = 1; i <= 10; i++) {
+        const qName = `q${i}`;
+        const checked = document.querySelector(`input[name="${qName}"]:checked`);
+        if (!checked) {
+            return false;
+        }
+    }
+    return true;
+}
+
+function submitExam() {
+    if (!examStartTime) {
+        alert('Error: El temporizador del examen no se inició.');
+        return;
+    }
+
+    if (!validateAllQuestionsAnswered()) {
+        alert('Debe responder todas las 10 preguntas antes de enviar el examen.');
+        return;
+    }
+
+    stopExamTimer();
+
+    let score = 0;
+    let criticalErrors = 0;
+
+    for (let i = 1; i <= 10; i++) {
+        const qName = `q${i}`;
+        const selected = document.querySelector(`input[name="${qName}"]:checked`).value;
+        const correct = examAnswers[qName];
+
+        if (selected === correct) {
+            score++;
+        } else if (criticalQuestions.includes(qName)) {
+            criticalErrors++;
+        }
+    }
+
+    const percentage = Math.round((score / 10) * 100);
+    const timeSeconds = getElapsedSeconds();
+    const passed = percentage >= 70 && criticalErrors === 0;
+
+    let state = getState() || {};
+    if (!state.scores) state.scores = {};
+    state.scores.fase2 = {
+        score: score,
+        attempts: (state.scores.fase2?.attempts || 0) + 1,
+        criticalErrors: criticalErrors,
+        timeSeconds: timeSeconds,
+        passed: passed
+    };
+
+    // Sync with index.html global metrics
+    if (!state.phaseScores) state.phaseScores = {};
+    if (!state.phaseCriticalErrors) state.phaseCriticalErrors = {};
+    if (!state.phaseTime) state.phaseTime = {};
+    state.phaseScores[2] = percentage;
+    state.phaseCriticalErrors[2] = criticalErrors;
+    state.phaseTime[2] = timeSeconds;
+
+    saveState(state);
+
+    displayResults(percentage, score, criticalErrors, timeSeconds, passed);
+
+    if (passed) {
+        document.getElementById('completeBtn').disabled = false;
+    }
+}
+
+function displayResults(percentage, score, criticalErrors, timeSeconds, passed) {
+    const resultsPanel = document.getElementById('resultsPanel');
+    const resultsPanelContent = document.getElementById('resultsPanelContent');
+    const resultsTitle = document.getElementById('resultsTitle');
+    const resultsScore = document.getElementById('resultsScore');
+    const resultsMessage = document.getElementById('resultsMessage');
+    const resultsCorrect = document.getElementById('resultsCorrect');
+    const resultsCritical = document.getElementById('resultsCritical');
+    const resultsTime = document.getElementById('resultsTime');
+    const retryBtn = document.getElementById('retryBtn');
+    const submitBtn = document.getElementById('submitBtn');
+
+    const minutes = Math.floor(timeSeconds / 60);
+    const seconds = timeSeconds % 60;
+    const timeDisplay = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+
+    resultsScore.textContent = percentage + '%';
+    resultsCorrect.textContent = score + '/10';
+    resultsCritical.textContent = criticalErrors;
+    resultsTime.textContent = timeDisplay;
+
+    if (passed) {
+        resultsTitle.textContent = 'Excelente - Fase Aprobada!';
+        resultsMessage.textContent = `Ha alcanzado ${percentage}% de aciertos. Puede proceder a completar la fase.`;
+        resultsPanelContent.classList.remove('fail');
+    } else {
+        resultsTitle.textContent = 'Necesita Mejorar';
+        if (percentage >= 70 && criticalErrors > 0) {
+            resultsMessage.textContent = `Has alcanzado el puntaje mínimo, pero cometiste errores en preguntas críticas que comprometen la seguridad. Debes responder correctamente TODAS las preguntas críticas para aprobar.`;
+        } else {
+            resultsMessage.textContent = `Ha alcanzado ${percentage}%. Debe lograr 70% para completar la fase. Reintente.`;
+        }
+        resultsPanelContent.classList.add('fail');
+        retryBtn.style.display = 'flex';
+    }
+
+    submitBtn.style.display = 'none';
+    resultsPanel.style.display = 'block';
+    resultsPanel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function retryExam() {
+    examStartTime = null;
+    document.getElementById('resultsPanel').style.display = 'none';
+    document.getElementById('submitBtn').style.display = 'flex';
+    document.getElementById('retryBtn').style.display = 'none';
+
+    for (let i = 1; i <= 10; i++) {
+        const qName = `q${i}`;
+        const radios = document.querySelectorAll(`input[name="${qName}"]`);
+        radios.forEach(r => r.checked = false);
+    }
+
+    document.getElementById('timerDisplay').textContent = '0:00';
+    document.getElementById('progressInner').style.width = '0%';
+    document.getElementById('progressText').textContent = 'Pregunta 0 de 10';
+
+    startExamTimer();
+}
+
+function completePhase(phaseNum) {
+    try {
+        let state = getState() || {};
+        if (!state.completedPhases) state.completedPhases = [];
+        if (!state.completedPhases.includes(phaseNum)) {
+            state.completedPhases.push(phaseNum);
+        }
+        saveState(state);
+        alert('Fase ' + phaseNum + ' completada. Regresando al portal...');
+        window.location.href = 'index.html';
+    } catch(e) {
+        alert('Fase completada.');
+        window.location.href = 'index.html';
+    }
+}
+
+// Initialize on page load
+window.addEventListener('load', function() {
+    if (!checkLoginAndPhase()) return;
+    startExamTimer();
+});
+</script>
+</body>
+</html>

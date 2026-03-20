@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fase 4: Gestión Final | Protocolo Fortaleza</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* ═══════════════════════════════════
+           FASE 4 - GESTIÓN FINAL
+           Patrón D-F-G-E (Diagnóstico-Fichas-Guia-Evaluación)
+           ═══════════════════════════════════ */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --bg: #050B14; --bg-card: #0F172A; --bg-hover: #162032;
+            --border: #1E293B; --text: #F0F6FC; --text-sec: #94A3B8; --text-muted: #64748B;
+            --blue: #3B82F6; --cyan: #06B6D4; --green: #10B981; --amber: #F59E0B;
+            --red: #EF4444; --purple: #8B5CF6;
+            --font-d: 'Outfit', sans-serif; --font-b: 'Inter', sans-serif;
+            --radius: 12px;
+        }
+        body { font-family: var(--font-b); background: var(--bg); color: var(--text); line-height: 1.6; margin: 0; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg-card); }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+
+        /* NAV */
+        .nav { display: flex; align-items: center; justify-content: space-between; padding: 14px 28px; border-bottom: 1px solid var(--border); background: rgba(15,23,42,0.9); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 50; }
+        .nav-brand { font-family: var(--font-d); font-weight: 700; font-size: 0.95rem; color: var(--text); text-decoration: none; display: flex; align-items: center; gap: 10px; }
+        .nav-brand span { color: var(--blue); }
+        .btn-back { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border: 1px solid var(--border); border-radius: 6px; color: var(--text-sec); background: none; font-family: var(--font-b); font-size: 0.82rem; cursor: pointer; text-decoration: none; transition: all 0.2s; }
+        .btn-back:hover { border-color: var(--blue); color: var(--blue); }
+        .phase-indicator { padding: 4px 12px; background: rgba(6,182,212,0.15); color: var(--cyan); border-radius: 4px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+
+        /* CONTAINER */
+        .container { max-width: 960px; margin: 0 auto; padding: 32px 24px; }
+
+        /* HEADER */
+        .phase-header { margin-bottom: 40px; }
+        .phase-tag { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: var(--cyan); margin-bottom: 8px; }
+        .phase-title { font-family: var(--font-d); font-size: 2rem; font-weight: 800; margin-bottom: 8px; }
+        .phase-subtitle { color: var(--text-sec); font-size: 0.95rem; }
+        .phase-objective { background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.2); border-radius: 8px; padding: 16px; margin-top: 16px; font-size: 0.88rem; }
+        .phase-objective strong { color: var(--blue); }
+
+        /* MODULE SECTIONS */
+        .module { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 28px; overflow: hidden; }
+        .module-header { background: linear-gradient(135deg, #162032, var(--bg-card)); padding: 20px 24px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; }
+        .module-num { width: 36px; height: 36px; background: var(--blue); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-family: var(--font-d); font-weight: 800; font-size: 1rem; flex-shrink: 0; }
+        .module-meta {}
+        .module-label { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; font-weight: 700; }
+        .module-title { font-family: var(--font-d); font-size: 1.15rem; font-weight: 700; }
+        .module-body { padding: 24px; }
+
+        /* COGNITIVE OBJECTIVE */
+        .cog-obj { background: rgba(16,185,129,0.06); border-left: 3px solid var(--green); padding: 14px 16px; border-radius: 0 6px 6px 0; margin-bottom: 20px; font-size: 0.88rem; }
+        .cog-obj strong { color: var(--green); }
+
+        /* TABLES */
+        .data-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; margin: 16px 0; }
+        .data-table th { text-align: left; background: #1a2640; color: var(--text); padding: 12px; font-size: 0.82rem; font-weight: 600; }
+        .data-table td { padding: 12px; border-bottom: 1px solid var(--border); vertical-align: top; color: var(--text-sec); }
+        .data-table select, .data-table input { width: 100%; padding: 8px; background: var(--bg); border: 1px solid var(--border); border-radius: 4px; color: var(--text); font-family: var(--font-b); font-size: 0.85rem; }
+        .data-table select:focus, .data-table input:focus { border-color: var(--blue); outline: none; }
+
+        /* THREAT GRID */
+        .threat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin: 16px 0; }
+        .threat-card { background: rgba(15,23,42,0.5); border: 1px solid var(--border); border-radius: 8px; padding: 20px; }
+        .threat-card h4 { font-family: var(--font-d); font-size: 1rem; margin-bottom: 8px; }
+        .threat-card p { font-size: 0.85rem; color: var(--text-sec); margin-bottom: 10px; }
+        .threat-card ul { padding-left: 16px; font-size: 0.83rem; color: var(--text-sec); }
+        .threat-card li { margin-bottom: 4px; }
+        .threat-card label { font-size: 0.82rem; color: var(--text-sec); display: flex; align-items: center; gap: 6px; margin-top: 10px; cursor: pointer; }
+        .threat-card input[type="checkbox"] { accent-color: var(--green); }
+        .border-amber { border-left: 4px solid var(--amber); }
+        .border-blue { border-left: 4px solid var(--blue); }
+        .border-red { border-left: 4px solid var(--red); }
+        .border-green { border-left: 4px solid var(--green); }
+
+        /* FLASHCARDS */
+        .flash-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin: 16px 0; }
+        .flashcard { background: rgba(15,23,42,0.5); border: 1px solid var(--border); border-radius: 8px; padding: 20px; cursor: pointer; transition: all 0.2s; border-top: 4px solid var(--red); }
+        .flashcard:hover { border-color: var(--blue); transform: translateY(-2px); }
+        .flash-q { font-weight: 600; font-size: 0.9rem; margin-bottom: 10px; }
+        .flash-a { display: none; border-top: 1px solid var(--border); padding-top: 10px; margin-top: 10px; font-size: 0.85rem; color: var(--green); }
+        .flashcard.open .flash-a { display: block; }
+        .flash-hint { font-size: 0.7rem; color: var(--text-muted); text-align: center; }
+        .flashcard.open .flash-hint { display: none; }
+
+        /* INPUT BOXES */
+        .input-group { margin-bottom: 14px; }
+        .input-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 4px; color: var(--text-sec); }
+        .input-group input, .input-group textarea, .input-group select { width: 100%; padding: 10px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-family: var(--font-b); font-size: 0.88rem; }
+        .input-group input:focus, .input-group textarea:focus { border-color: var(--blue); outline: none; }
+
+        /* CHECKBOXES GRID */
+        .check-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px; margin: 12px 0; }
+        .check-grid label { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: var(--text-sec); cursor: pointer; padding: 6px 10px; border-radius: 4px; transition: background 0.2s; }
+        .check-grid label:hover { background: rgba(59,130,246,0.08); }
+        .check-grid input { accent-color: var(--green); }
+
+        /* GUIDE CONCEPT BLOCK */
+        .concept-block { background: rgba(15,23,42,0.5); border: 1px solid var(--border); border-radius: 8px; padding: 20px; margin-bottom: 14px; }
+        .concept-block h4 { font-family: var(--font-d); font-size: 1rem; color: var(--blue); margin-bottom: 8px; }
+        .concept-block p { font-size: 0.88rem; color: var(--text-sec); margin-bottom: 8px; }
+        .concept-block ul { padding-left: 16px; }
+        .concept-block li { font-size: 0.85rem; color: var(--text-sec); margin-bottom: 6px; }
+
+        /* EXAM STYLES */
+        .exam-module { background: var(--bg-card); border: 2px solid var(--red); border-radius: var(--radius); margin-bottom: 28px; overflow: hidden; }
+        .exam-header { background: linear-gradient(135deg, rgba(239,68,68,0.2), rgba(239,68,68,0.1)); padding: 20px 24px; border-bottom: 2px solid var(--red); display: flex; align-items: center; gap: 12px; }
+        .exam-num { width: 36px; height: 36px; background: var(--red); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-family: var(--font-d); font-weight: 800; font-size: 1rem; flex-shrink: 0; }
+        .exam-title { font-family: var(--font-d); font-size: 1.15rem; font-weight: 700; }
+        .exam-body { padding: 24px; }
+
+        .progress-bar { width: 100%; background: rgba(59,130,246,0.2); border-radius: 4px; height: 8px; margin-bottom: 20px; overflow: hidden; }
+        .progress-fill { background: var(--blue); height: 100%; transition: width 0.3s; }
+
+        .exam-timer { font-family: var(--font-d); font-weight: 700; font-size: 1.1rem; color: var(--red); margin-bottom: 20px; }
+
+        .question-block { background: rgba(15,23,42,0.5); border: 1px solid var(--border); border-radius: 8px; padding: 20px; margin-bottom: 20px; }
+        .question-num { font-family: var(--font-d); font-weight: 700; font-size: 0.95rem; color: var(--text); margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+        .critical-badge { display: inline-flex; align-items: center; gap: 4px; background: rgba(239,68,68,0.2); color: var(--red); padding: 3px 8px; border-radius: 3px; font-size: 0.7rem; font-weight: 700; }
+        .question-text { font-weight: 600; font-size: 0.95rem; margin-bottom: 14px; color: var(--text); }
+        .option { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 10px; padding: 12px; border: 1px solid var(--border); border-radius: 6px; cursor: pointer; transition: all 0.2s; }
+        .option:hover { background: rgba(59,130,246,0.08); border-color: var(--blue); }
+        .option input[type="radio"] { accent-color: var(--blue); margin-top: 2px; }
+        .option-text { font-size: 0.9rem; color: var(--text-sec); }
+
+        .results-panel { background: rgba(16,185,129,0.08); border: 2px solid var(--green); border-radius: 8px; padding: 24px; margin: 24px 0; }
+        .results-panel.fail { background: rgba(239,68,68,0.08); border-color: var(--red); }
+        .results-title { font-family: var(--font-d); font-weight: 700; font-size: 1.3rem; margin-bottom: 16px; color: var(--green); }
+        .results-panel.fail .results-title { color: var(--red); }
+        .results-stat { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 0.95rem; }
+        .results-stat strong { color: var(--text); }
+        .results-stat span { font-family: var(--font-d); font-weight: 700; font-size: 1.1rem; }
+        .results-panel.fail .results-stat span { color: var(--red); }
+
+        .exam-actions { display: flex; gap: 12px; margin-top: 20px; flex-wrap: wrap; }
+
+        /* COMPLETE BUTTON */
+        .btn-complete { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; max-width: 400px; margin: 32px auto; padding: 16px; background: linear-gradient(135deg, var(--green), #059669); border: none; border-radius: 8px; color: white; font-family: var(--font-b); font-size: 1rem; font-weight: 700; cursor: pointer; transition: all 0.3s; }
+        .btn-complete:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(16,185,129,0.3); }
+        .btn-complete:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .btn-exam { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 20px; background: var(--red); border: none; border-radius: 6px; color: white; font-family: var(--font-b); font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+        .btn-exam:hover { background: #DC2626; }
+        .btn-exam:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .btn-retry { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 20px; background: var(--amber); border: none; border-radius: 6px; color: #000; font-family: var(--font-b); font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+        .btn-retry:hover { background: #FBBF24; }
+
+        .congratulations-banner { background: linear-gradient(135deg, rgba(16,185,129,0.2), rgba(6,182,212,0.2)); border: 2px solid var(--green); border-radius: 8px; padding: 24px; margin: 24px 0; text-align: center; }
+        .congratulations-banner h2 { font-family: var(--font-d); font-size: 1.5rem; color: var(--green); margin-bottom: 8px; }
+        .congratulations-banner p { font-size: 0.95rem; color: var(--text-sec); margin-bottom: 4px; }
+
+        /* FOOTER */
+        .footer { text-align: center; padding: 24px; font-size: 0.75rem; color: var(--text-muted); border-top: 1px solid var(--border); margin-top: 40px; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        .fade-in { animation: fadeIn 0.4s ease forwards; }
+
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+    <a href="index.html" class="btn-back">&#8592; Portal Principal</a>
+    <div class="nav-brand">PROTOCOLO <span>FORTALEZA</span></div>
+    <div class="phase-indicator">Fase 4</div>
+</nav>
+
+<div class="container">
+
+    <!-- HEADER -->
+    <div class="phase-header fade-in">
+        <div class="phase-tag">Fase 4: Gestión Final de Recursos</div>
+        <h1 class="phase-title">Auditoria de Inventario y Certificación</h1>
+        <div class="phase-subtitle">Control Final de Extintores, Materiales de Emergencia y Validacion Operativa del Protocolo Fortaleza</div>
+        <div class="phase-objective">
+            <strong>Objetivo de Aprendizaje:</strong> Dominar la auditoria cognitiva de recursos criticos, establecer ciclos de vigilancia de obsolescencia, y consolidar la capacidad operativa del plan de respuesta mediante certificación final.
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════
+         MÓDULO 1: DIAGNÓSTICO (D)
+         Auditoria Cognitiva
+         ═══════════════════════════════ -->
+    <div class="module fade-in">
+        <div class="module-header">
+            <div class="module-num">D</div>
+            <div class="module-meta">
+                <div class="module-label">Módulo 01: Diagnóstico</div>
+                <div class="module-title">Cuestionario de Auditoria de Recursos (Recuperación Activa)</div>
+            </div>
+        </div>
+        <div class="module-body">
+            <div class="cog-obj">
+                <strong>Instruccion Cognitiva:</strong> Complete el cuestionario de auditoria utilizando su inventario de recursos. Estas preguntas calibran su capacidad de precision técnica en identificación, localizacion y gestión de ciclos de expiracion. No adivine; verifique con evidencia fisica.
+            </div>
+
+            <div class="threat-grid">
+                <div class="input-group">
+                    <label>1. Precision Técnica de Supresion - Extintor CO2 (05 lbs):</label>
+                    <input type="text" placeholder="Formato: Ubicacion - Fecha Expiracion (Ej: Bodega/Farmacia - 31/10/2026)">
+                </div>
+                <div class="input-group">
+                    <label>2. Geometria de Recursos Criticos - Densidad Total:</label>
+                    <input type="text" placeholder="Formato: Cantidad Extintores / Cantidad Camillas (Ej: 67 Extintores / 15 Camillas)">
+                </div>
+                <div class="input-group">
+                    <label>3. Vigilancia de Obsolescencia - Discrepancia de Fechas:</label>
+                    <input type="text" placeholder="Formato: Fecha Bodega vs Fecha Pasillo (Ej: 2026 vs 2024)">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════
+         MÓDULO 2: FICHAS TÉCNICAS (F)
+         Repeticion Espaciada
+         ═══════════════════════════════ -->
+    <div class="module fade-in">
+        <div class="module-header">
+            <div class="module-num" style="background:var(--amber);">F</div>
+            <div class="module-meta">
+                <div class="module-label">Módulo 02: Fichas Técnicas</div>
+                <div class="module-title">Fichas de Recursos RED (Repeticion Espaciada)</div>
+            </div>
+        </div>
+        <div class="module-body">
+            <div class="cog-obj">
+                <strong>Mecanismo:</strong> Tarjetas técnicas con información critica sobre extintores, camillas y recursos operativos. Haga clic en cada tarjeta para revelar detalles de ubicacion, expiracion y uso tactico.
+            </div>
+
+            <div class="flash-grid">
+                <div class="flashcard" onclick="this.classList.toggle('open')">
+                    <div class="flash-q">Extintor CO2 (05 lbs) - Especificaciones</div>
+                    <div class="flash-a">
+                        <strong>Ubicacion:</strong> Bodega/Farmacia<br>
+                        <strong>Expiracion:</strong> 31/10/2026<br>
+                        <strong>Uso Tactico:</strong> Equipos electricos y equipo medico delicado (no deja residuo)<br>
+                        <strong>Nota Critica:</strong> Mantener en area refrigerada. Verificar manometro mensualmente.
+                    </div>
+                    <div class="flash-hint">Clic para revelar detalles</div>
+                </div>
+
+                <div class="flashcard" onclick="this.classList.toggle('open')">
+                    <div class="flash-q">Extintores Polvo ABC (10 lbs) - Especificaciones</div>
+                    <div class="flash-a">
+                        <strong>Ubicaciones:</strong> Farmacia, Pasillo Admision, Salida Emergencia, Archivo Clinico<br>
+                        <strong>Expiracion:</strong> 30/04/2024<br>
+                        <strong>ESTADO CRITICO:</strong> ATENCION INMEDIATA - Vencidos hace 2 meses<br>
+                        <strong>Uso Tactico:</strong> Incendios Clase A, B y C (multipropositivo). Debera ser reemplazado urgentemente.
+                    </div>
+                    <div class="flash-hint">Clic para revelar detalles</div>
+                </div>
+
+                <div class="flashcard" onclick="this.classList.toggle('open')">
+                    <div class="flash-q">Camillas de Transporte - Especificaciones</div>
+                    <div class="flash-a">
+                        <strong>Cantidad Total:</strong> 15 unidades<br>
+                        <strong>Ubicaciones Principales:</strong> Emergencia (8 unidades), Encamamiento (7 unidades)<br>
+                        <strong>Prioridad Operativa:</strong> Evacuación de poblacion no ambulatoria<br>
+                        <strong>Verificacion:</strong> Control mensual de mecanismos de sujecion y ruedas. Simulacro trimestral obligatorio.
+                    </div>
+                    <div class="flash-hint">Clic para revelar detalles</div>
+                </div>
+
+                <div class="flashcard" onclick="this.classList.toggle('open')">
+                    <div class="flash-q">Fuerza Operativa Total RED - Recursos Consolidados</div>
+                    <div class="flash-a">
+                        <strong>Capacidad Total de Supresion:</strong> 67 extintores distribuidos<br>
+                        <strong>Equipamiento de Transporte:</strong> 15 camillas operativas<br>
+                        <strong>Stock de Materiales:</strong> Bodega Central y Emergencia<br>
+                        <strong>Nota:</strong> Requiere auditoria completa anual y actualizacion de base de datos de localizacion GPS.
+                    </div>
+                    <div class="flash-hint">Clic para revelar detalles</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TRANSITION: Module F to Module G -->
+    <div class="module-transition" style="background: linear-gradient(135deg, var(--blue) 0%, var(--cyan) 100%); padding: 32px; border-radius: 12px; margin: 20px 0; border: 1px solid var(--border);">
+        <p style="color: var(--text); font-size: 16px; line-height: 1.8; font-weight: 500;">Con el inventario de recursos completado y las fichas técnicas dominadas, ahora integramos todo el conocimiento en la planificación operativa final.</p>
+    </div>
+
+    <!-- ═══════════════════════════════
+         MÓDULO 3: GUIA DE ESTUDIO (G)
+         Metacognicion
+         ═══════════════════════════════ -->
+    <div class="module fade-in">
+        <div class="module-header">
+            <div class="module-num" style="background:var(--green);">G</div>
+            <div class="module-meta">
+                <div class="module-label">Módulo 03: Guia de Estudio</div>
+                <div class="module-title">Arquitectura de la Respuesta RED (Metacognicion)</div>
+            </div>
+        </div>
+        <div class="module-body">
+            <div class="cog-obj">
+                <strong>Objetivo Metacognitivo:</strong> Entender la logica sistematica de coordinacion entre recursos humanos y materiales. La certificación final valida que ha consolidado el conocimiento de las cuatro fases.
+            </div>
+
+            <div class="concept-block">
+                <h4>I. Taxonomía y Categorizacion de Recursos</h4>
+                <p>Diferencie claramente los tipos de extintores segun ubicacion y capacidad:</p>
+                <ul>
+                    <li><strong>CO2 (Almacen de Farmacia):</strong> Destinado a equipo electrico y delicado. Capacidad 05 lbs. Expiracion 2026 (VIGENTE).</li>
+                    <li><strong>Polvo ABC (Areas Generales):</strong> Multipropositivo para uso en zonas administrativas, pasillos y salidas. Capacidad 10 lbs. Expiracion 2024 (OBSOLETO - requiere reemplazo inmediato).</li>
+                    <li><strong>Densidad Operativa:</strong> 67 extintores totales distribuidos con criterio geometrico (cobertura espacial equidistante).</li>
+                </ul>
+            </div>
+
+            <div class="concept-block">
+                <h4>II. Geometria de la Seguridad - Puntos Criticos</h4>
+                <p>Identifique los "nodos de estrangulamiento" donde convergen flujos de evacuación:</p>
+                <ul>
+                    <li><strong>Pasillos de Admision:</strong> Punto de ingreso principal. Alta densidad de ocupación (publico + pacientes). Ubicacion de 2 extintores ABC.</li>
+                    <li><strong>Salida de Emergencia:</strong> Ruta de escape critica. Debe estar despejada y con extintor ABC adyacente. Validar semanal.</li>
+                    <li><strong>Archivo Clinico:</strong> Material inflamable. Riesgo especifico de incendio. Extintor ABC local + CO2 de respaldo en farmacia (proximidad 40 metros).</li>
+                    <li><strong>Distribucion de Camillas:</strong> 15 unidades colocadas estrategicamente para acceso rapido. No encadenar; mantener con ruedas operativas.</li>
+                </ul>
+            </div>
+
+            <div class="concept-block">
+                <h4>III. Vigilancia Metacognitiva - Ciclos de Obsolescencia</h4>
+                <p>Establezca disciplina de auditoria continua para mantener el sistema operativo:</p>
+                <ul>
+                    <li><strong>Discrepancia de Fechas Actual:</strong> Bodega tiene vigencia 2026 vs Pasillo tiene vigencia 2024. PROBLEMA CRITICO: El 50% del inventario de pasillo esta expirado.</li>
+                    <li><strong>Integridad de Datos:</strong> Cree planilla de doble entrada: inventario fisico vs. base de datos. Reconcilie mensualmente. Una discrepancia indica falla de control.</li>
+                    <li><strong>Ojo Clinico de Auditoria:</strong> No solo lea etiquetas. Verifique manometros, sellos de seguridad y estado de presion. Un extintor con etiqueta vigente pero manometro en rojo es INSERVIBLE.</li>
+                    <li><strong>Simulacro de Vigilancia:</strong> Practique encontrar la discrepancia. ¿Donde esta el error? ¿Quien es responsable? ¿Cual es el protocolo de reemplazo?</li>
+                </ul>
+            </div>
+
+            <div class="concept-block">
+                <h4>IV. Ejecucion en Situacion RED - Coordinacion Operativa</h4>
+                <p>Integre recursos humanos con materiales en un flujo coherente:</p>
+                <ul>
+                    <li><strong>Inicio de Emergencia:</strong> Deteccion de fuego en Archivo Clinico. Personal local activa extintor ABC local (ubicacion conocida).</li>
+                    <li><strong>Escalada:</strong> Si falla, coordinador RED solicita CO2 desde Farmacia (40 metros). Ruta previamente validada durante simulacro.</li>
+                    <li><strong>Evacuación Paralela:</strong> Mientras se intenta supresion, equipo de transporte moviliza camillas desde Emergencia (8 unidades) hacia zona segura. Uso de rutas alternas si pasillo principal esta comprometido.</li>
+                    <li><strong>Escenario Critico:</strong> Acceso a Bodega bloqueado. ¿Quedan extintores sin usar en otras zonas? ¿Puede el equipo RED improvisar con recursos limitados? ESTE ES EL NIVEL FINAL DE COMPETENCIA.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- VIDEO EDUCATIVO -->
+    <div class="module fade-in">
+        <div class="module-header">
+            <div class="module-num" style="background:var(--blue);">&#9654;</div>
+            <div class="module-meta">
+                <div class="module-label">Material Audiovisual</div>
+                <div class="module-title">Video: Gestión de Recursos y Extintores</div>
+            </div>
+        </div>
+        <div class="module-body">
+            <div class="cog-obj">
+                <strong>Codificacion Dual:</strong> Visualice la ubicacion y clasificación de extintores y recursos para automatizar su modelo mental de respuesta.
+            </div>
+            <div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:8px;margin-top:12px;">
+                <iframe src="https://www.youtube.com/embed/NMixBDBYDxw" style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;" allowfullscreen></iframe>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════
+         MÓDULO 4: EVALUACIÓN (E)
+         Motor de Evaluación de Fase 4
+         ═══════════════════════════════ -->
+    <div class="exam-module fade-in">
+        <div class="exam-header">
+            <div class="exam-num">E</div>
+            <div class="module-meta">
+                <div class="module-label">Módulo 04: Evaluación</div>
+                <div class="exam-title">Evaluación de Competencia NRD-2 (10 Preguntas)</div>
+            </div>
+        </div>
+        <div class="exam-body">
+            <div class="cog-obj">
+                <strong>Requisito:</strong> Responda todas las preguntas. Puntuacion minima de 70% para pasar. Las preguntas marcadas con ⚠️ son CRITICAS - errores aqui impactan el resultado final.
+            </div>
+
+            <div class="exam-timer">Tiempo: <span id="examTime">00:00</span></div>
+
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width:0%;"></div>
+            </div>
+
+            <form id="examForm">
+                <!-- Q1 -->
+                <div class="question-block">
+                    <div class="question-num">Pregunta 1</div>
+                    <div class="question-text">¿Cuál es la función principal de un extintor de CO2?</div>
+                    <label class="option">
+                        <input type="radio" name="q1" value="a" required>
+                        <span class="option-text"><strong>a)</strong> Apagar incendios de madera</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q1" value="b" required>
+                        <span class="option-text"><strong>b)</strong> Sofocar incendios eléctricos y de líquidos inflamables sin dejar residuo</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q1" value="c" required>
+                        <span class="option-text"><strong>c)</strong> Apagar incendios forestales</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q1" value="d" required>
+                        <span class="option-text"><strong>d)</strong> Enfriar estructuras metálicas</span>
+                    </label>
+                </div>
+
+                <!-- Q2 CRITICAL -->
+                <div class="question-block">
+                    <div class="question-num">Pregunta 2 <span class="critical-badge">⚠️ CRITICA</span></div>
+                    <div class="question-text">¿Con qué frecuencia deben inspeccionarse los extintores según buenas prácticas NRD-2?</div>
+                    <label class="option">
+                        <input type="radio" name="q2" value="a" required>
+                        <span class="option-text"><strong>a)</strong> Cada 5 años</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q2" value="b" required>
+                        <span class="option-text"><strong>b)</strong> Mensualmente y recarga anual</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q2" value="c" required>
+                        <span class="option-text"><strong>c)</strong> Solo cuando se usan</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q2" value="d" required>
+                        <span class="option-text"><strong>d)</strong> Cada 2 años</span>
+                    </label>
+                </div>
+
+                <!-- Q3 -->
+                <div class="question-block">
+                    <div class="question-num">Pregunta 3</div>
+                    <div class="question-text">¿Qué tipo de extintor es el más versátil para uso general en edificaciones?</div>
+                    <label class="option">
+                        <input type="radio" name="q3" value="a" required>
+                        <span class="option-text"><strong>a)</strong> CO2</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q3" value="b" required>
+                        <span class="option-text"><strong>b)</strong> Agua presurizada</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q3" value="c" required>
+                        <span class="option-text"><strong>c)</strong> Polvo químico seco ABC</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q3" value="d" required>
+                        <span class="option-text"><strong>d)</strong> Espuma</span>
+                    </label>
+                </div>
+
+                <!-- Q4 -->
+                <div class="question-block">
+                    <div class="question-num">Pregunta 4</div>
+                    <div class="question-text">¿Cuál es el criterio para determinar la cantidad de extintores necesarios?</div>
+                    <label class="option">
+                        <input type="radio" name="q4" value="a" required>
+                        <span class="option-text"><strong>a)</strong> Uno por piso</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q4" value="b" required>
+                        <span class="option-text"><strong>b)</strong> Según la carga de ocupación, tipo de riesgo y distancia máxima de recorrido</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q4" value="c" required>
+                        <span class="option-text"><strong>c)</strong> Según el presupuesto</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q4" value="d" required>
+                        <span class="option-text"><strong>d)</strong> Uno por cada 10 empleados</span>
+                    </label>
+                </div>
+
+                <!-- Q5 CRITICAL -->
+                <div class="question-block">
+                    <div class="question-num">Pregunta 5 <span class="critical-badge">⚠️ CRITICA</span></div>
+                    <div class="question-text">¿Qué debe hacerse cuando un extintor tiene la fecha de recarga vencida?</div>
+                    <label class="option">
+                        <input type="radio" name="q5" value="a" required>
+                        <span class="option-text"><strong>a)</strong> Usarlo de todos modos</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q5" value="b" required>
+                        <span class="option-text"><strong>b)</strong> Retirarlo de servicio inmediatamente y reemplazarlo</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q5" value="c" required>
+                        <span class="option-text"><strong>c)</strong> Esperar a la próxima inspección</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q5" value="d" required>
+                        <span class="option-text"><strong>d)</strong> Ponerle una etiqueta de advertencia</span>
+                    </label>
+                </div>
+
+                <!-- Q6 -->
+                <div class="question-block">
+                    <div class="question-num">Pregunta 6</div>
+                    <div class="question-text">¿Cuál es la composición mínima de una brigada de emergencia?</div>
+                    <label class="option">
+                        <input type="radio" name="q6" value="a" required>
+                        <span class="option-text"><strong>a)</strong> Solo el jefe de seguridad</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q6" value="b" required>
+                        <span class="option-text"><strong>b)</strong> Personal capacitado de diferentes áreas con roles definidos</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q6" value="c" required>
+                        <span class="option-text"><strong>c)</strong> Todo el personal</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q6" value="d" required>
+                        <span class="option-text"><strong>d)</strong> Solo voluntarios externos</span>
+                    </label>
+                </div>
+
+                <!-- Q7 -->
+                <div class="question-block">
+                    <div class="question-num">Pregunta 7</div>
+                    <div class="question-text">¿Qué información debe contener el inventario de recursos de emergencia?</div>
+                    <label class="option">
+                        <input type="radio" name="q7" value="a" required>
+                        <span class="option-text"><strong>a)</strong> Solo la lista de extintores</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q7" value="b" required>
+                        <span class="option-text"><strong>b)</strong> Tipo, cantidad, ubicación, estado y fecha de vencimiento de cada recurso</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q7" value="c" required>
+                        <span class="option-text"><strong>c)</strong> Solo el presupuesto gastado</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q7" value="d" required>
+                        <span class="option-text"><strong>d)</strong> Nombres del personal</span>
+                    </label>
+                </div>
+
+                <!-- Q8 -->
+                <div class="question-block">
+                    <div class="question-num">Pregunta 8</div>
+                    <div class="question-text">¿Para qué sirve una camilla tipo Miller en emergencias?</div>
+                    <label class="option">
+                        <input type="radio" name="q8" value="a" required>
+                        <span class="option-text"><strong>a)</strong> Transportar equipos</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q8" value="b" required>
+                        <span class="option-text"><strong>b)</strong> Evacuar personas heridas o inconscientes de forma segura</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q8" value="c" required>
+                        <span class="option-text"><strong>c)</strong> Bloquear rutas</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q8" value="d" required>
+                        <span class="option-text"><strong>d)</strong> Señalizar zonas</span>
+                    </label>
+                </div>
+
+                <!-- Q9 CRITICAL -->
+                <div class="question-block">
+                    <div class="question-num">Pregunta 9 <span class="critical-badge">⚠️ CRITICA</span></div>
+                    <div class="question-text">¿Cuál es el procedimiento correcto ante un incendio en un archivo documental?</div>
+                    <label class="option">
+                        <input type="radio" name="q9" value="a" required>
+                        <span class="option-text"><strong>a)</strong> Usar agua a presión</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q9" value="b" required>
+                        <span class="option-text"><strong>b)</strong> Evaluar, activar alarma, usar extintor ABC/CO2, evacuar si no se controla</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q9" value="c" required>
+                        <span class="option-text"><strong>c)</strong> Cerrar la puerta y esperar</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q9" value="d" required>
+                        <span class="option-text"><strong>d)</strong> Abrir ventanas para ventilación</span>
+                    </label>
+                </div>
+
+                <!-- Q10 -->
+                <div class="question-block">
+                    <div class="question-num">Pregunta 10</div>
+                    <div class="question-text">¿Qué documento certifica que una edificación cumple con NRD-2?</div>
+                    <label class="option">
+                        <input type="radio" name="q10" value="a" required>
+                        <span class="option-text"><strong>a)</strong> Licencia de construcción</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q10" value="b" required>
+                        <span class="option-text"><strong>b)</strong> Dictamen favorable de CONRED</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q10" value="c" required>
+                        <span class="option-text"><strong>c)</strong> Póliza de seguro</span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q10" value="d" required>
+                        <span class="option-text"><strong>d)</strong> Permiso municipal</span>
+                    </label>
+                </div>
+
+                <div style="text-align: center; margin-top: 30px;">
+                    <button type="button" class="btn-exam" id="submitBtn" onclick="submitExam()">Enviar Evaluación</button>
+                </div>
+            </form>
+
+            <!-- RESULTS PANEL -->
+            <div id="resultsPanel" class="results-panel hidden">
+                <div class="results-title" id="resultsTitle">Resultados</div>
+                <div class="results-stat">
+                    <strong>Puntuación:</strong>
+                    <span id="scoreDisplay">0%</span>
+                </div>
+                <div class="results-stat">
+                    <strong>Preguntas Correctas:</strong>
+                    <span id="correctDisplay">0/10</span>
+                </div>
+                <div class="results-stat">
+                    <strong>Errores Críticos:</strong>
+                    <span id="criticalDisplay">0</span>
+                </div>
+                <div class="results-stat">
+                    <strong>Tiempo Total:</strong>
+                    <span id="timeDisplay">0:00</span>
+                </div>
+                <div id="resultMessage" style="margin-top: 16px; font-size: 0.95rem; color: var(--text-sec);"></div>
+                <div class="exam-actions" id="examActions"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONGRATULATIONS BANNER (shown when all phases complete) -->
+    <div id="congratulationsBanner" class="congratulations-banner hidden">
+        <h2>¡FELICITACIONES!</h2>
+        <p>Ha completado todas las 4 fases del Protocolo Fortaleza.</p>
+        <p>Su certificación de capacitación está siendo procesada.</p>
+    </div>
+
+    <!-- COMPLETE BUTTON -->
+    <button class="btn-complete" id="completeBtnFinal" onclick="completePhase(4)" disabled>
+        &#10004; Certificar Programa Completo
+    </button>
+
+    <div class="footer">
+        Protocolo Fortaleza v2.0 | Fase 4: Gestión Final de Recursos<br>
+        Basado en evidencia: Recuperación Activa &bull; Repeticion Espaciada &bull; Metacognicion &bull; Evaluación Cognitiva
+    </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════
+// SECURITY FUNCTIONS - HASH INTEGRITY
+// ═══════════════════════════════════════════════
+function computeHash(data) {
+    const salt = 'PF_NRD2_2026';
+    const str = salt + JSON.stringify(data);
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+        const char = str.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash;
+    }
+    return hash.toString(36);
+}
+
+function getState() {
+    try {
+        const raw = localStorage.getItem('pf_session');
+        if (!raw) return null;
+        const state = JSON.parse(raw);
+        const storedHash = state._hash;
+        const stateWithoutHash = {...state};
+        delete stateWithoutHash._hash;
+        if (computeHash(stateWithoutHash) !== storedHash) {
+            alert('⚠️ Se detectó manipulación de datos. La sesión ha sido reiniciada.');
+            localStorage.removeItem('pf_session');
+            window.location.href = 'index.html';
+            return null;
+        }
+        return state;
+    } catch(e) {
+        return null;
+    }
+}
+
+function saveState(state) {
+    try {
+        const stateToSave = {...state};
+        delete stateToSave._hash;
+        stateToSave._hash = computeHash(stateToSave);
+        localStorage.setItem('pf_session', JSON.stringify(stateToSave));
+    } catch(e) {
+        console.error('Error saving state');
+    }
+}
+
+// ═══════════════════════════════════════════════
+// NAVIGATION GUARD
+// ═══════════════════════════════════════════════
+function checkAccess() {
+    try {
+        const state = getState();
+        const loggedIn = state && state.loggedIn === true;
+        const completedPhases = (state && state.completedPhases) || [];
+
+        if (!loggedIn || !completedPhases.includes(3)) {
+            window.location.href = 'index.html';
+            return false;
+        }
+        return true;
+    } catch(e) {
+        window.location.href = 'index.html';
+        return false;
+    }
+}
+
+// ═══════════════════════════════════════════════
+// EXAM ENGINE - MODULE E
+// ═══════════════════════════════════════════════
+const CORRECT_ANSWERS = {
+    q1: 'b',
+    q2: 'b',
+    q3: 'c',
+    q4: 'b',
+    q5: 'b',
+    q6: 'b',
+    q7: 'b',
+    q8: 'b',
+    q9: 'b',
+    q10: 'b'
+};
+
+const CRITICAL_QUESTIONS = ['q2', 'q5', 'q9'];
+const PASSING_SCORE = 70;
+
+let examStartTime = null;
+let timerInterval = null;
+
+function startExam() {
+    examStartTime = performance.now();
+    timerInterval = setInterval(updateTimer, 1000);
+}
+
+function updateTimer() {
+    const elapsed = Math.floor((performance.now() - examStartTime) / 1000);
+    const minutes = Math.floor(elapsed / 60);
+    const seconds = elapsed % 60;
+    document.getElementById('examTime').textContent =
+        String(minutes).padStart(2, '0') + ':' + String(seconds).padStart(2, '0');
+}
+
+function updateProgress() {
+    let answered = 0;
+    for (let i = 1; i <= 10; i++) {
+        const q = 'q' + i;
+        const checked = document.querySelector(`input[name="${q}"]:checked`);
+        if (checked) answered++;
+    }
+    const percentage = (answered / 10) * 100;
+    document.getElementById('progressFill').style.width = percentage + '%';
+}
+
+function submitExam() {
+    // Validate all questions answered
+    for (let i = 1; i <= 10; i++) {
+        const q = 'q' + i;
+        const checked = document.querySelector(`input[name="${q}"]:checked`);
+        if (!checked) {
+            alert('Por favor responda todas las preguntas antes de enviar.');
+            return;
+        }
+    }
+
+    // Calculate results
+    let correct = 0;
+    let criticalErrors = 0;
+
+    for (let i = 1; i <= 10; i++) {
+        const q = 'q' + i;
+        const checked = document.querySelector(`input[name="${q}"]:checked`);
+        const answer = checked.value;
+
+        if (answer === CORRECT_ANSWERS[q]) {
+            correct++;
+        } else if (CRITICAL_QUESTIONS.includes(q)) {
+            criticalErrors++;
+        }
+    }
+
+    const score = Math.round((correct / 10) * 100);
+    const elapsed = Math.floor((performance.now() - examStartTime) / 1000);
+    const passed = score >= PASSING_SCORE && criticalErrors === 0;
+
+    // Save scores
+    try {
+        let state = getState() || {};
+        if (!state.scores) state.scores = {};
+        state.scores.fase4 = {
+            score: score,
+            attempts: (state.scores.fase4?.attempts || 0) + 1,
+            criticalErrors: criticalErrors,
+            timeSeconds: elapsed,
+            passed: passed
+        };
+
+        // Sync with index.html global metrics
+        if (!state.phaseScores) state.phaseScores = {};
+        if (!state.phaseCriticalErrors) state.phaseCriticalErrors = {};
+        if (!state.phaseTime) state.phaseTime = {};
+        state.phaseScores[4] = score;
+        state.phaseCriticalErrors[4] = criticalErrors;
+        state.phaseTime[4] = elapsed;
+
+        saveState(state);
+    } catch(e) {}
+
+    // Show results
+    displayResults(score, correct, criticalErrors, elapsed, passed);
+}
+
+function displayResults(score, correct, criticalErrors, elapsed, passed) {
+    const resultsPanel = document.getElementById('resultsPanel');
+    const resultsTitle = document.getElementById('resultsTitle');
+    const scoreDisplay = document.getElementById('scoreDisplay');
+    const correctDisplay = document.getElementById('correctDisplay');
+    const criticalDisplay = document.getElementById('criticalDisplay');
+    const timeDisplay = document.getElementById('timeDisplay');
+    const resultMessage = document.getElementById('resultMessage');
+    const examActions = document.getElementById('examActions');
+    const minutes = Math.floor(elapsed / 60);
+    const seconds = elapsed % 60;
+    const timeStr = minutes + ':' + String(seconds).padStart(2, '0');
+
+    scoreDisplay.textContent = score + '%';
+    correctDisplay.textContent = correct + '/10';
+    criticalDisplay.textContent = criticalErrors;
+    timeDisplay.textContent = timeStr;
+
+    if (passed) {
+        resultsTitle.textContent = '✓ ¡APROBADO!';
+        resultsPanel.classList.remove('fail');
+        resultMessage.innerHTML = '<strong>Excelente desempeño.</strong> Ha demostrado competencia en gestión de recursos de emergencia según normativa NRD-2. Puede proceder a completar esta fase.';
+        examActions.innerHTML = '<button type="button" class="btn-complete" style="max-width:none;" onclick="enableCompletion()">Continuar a Certificación Final</button>';
+
+        // Hide exam form
+        document.getElementById('examForm').style.display = 'none';
+    } else {
+        resultsTitle.textContent = '✗ NO APROBADO';
+        resultsPanel.classList.add('fail');
+        if (score >= PASSING_SCORE && criticalErrors > 0) {
+            resultMessage.innerHTML = '<strong>Has alcanzado el puntaje mínimo, pero cometiste errores en preguntas críticas que comprometen la seguridad.</strong> Debes responder correctamente TODAS las preguntas críticas para aprobar.';
+        } else {
+            resultMessage.innerHTML = '<strong>No ha alcanzado el mínimo de 70% y/o tiene errores críticos.</strong> Por favor, revise los módulos D, F y G antes de intentar de nuevo.';
+        }
+        examActions.innerHTML = '<button type="button" class="btn-retry" onclick="retryExam()">Intentar de Nuevo</button>';
+    }
+
+    resultsPanel.classList.remove('hidden');
+    clearInterval(timerInterval);
+}
+
+function retryExam() {
+    document.getElementById('examForm').reset();
+    document.getElementById('resultsPanel').classList.add('hidden');
+    updateProgress();
+    startExam();
+}
+
+function enableCompletion() {
+    document.getElementById('completeBtnFinal').disabled = false;
+}
+
+function completePhase(phaseNum) {
+    try {
+        let state = getState() || {};
+        if (!state.completedPhases) state.completedPhases = [];
+        if (!state.completedPhases.includes(phaseNum)) {
+            state.completedPhases.push(phaseNum);
+        }
+
+        // Check if all 4 phases are complete
+        const allPhasesComplete = [1, 2, 3, 4].every(p => state.completedPhases.includes(p));
+
+        if (allPhasesComplete) {
+            // Show congratulations banner and trigger ranking calculation
+            state.allPhasesCompleted = true;
+            state.completionTime = new Date().toISOString();
+            showCongratulations();
+        }
+
+        saveState(state);
+
+        if (!allPhasesComplete) {
+            alert('Fase ' + phaseNum + ' completada. Regresando al portal...');
+            window.location.href = 'index.html';
+        }
+    } catch(e) {
+        alert('Fase completada.');
+        window.location.href = 'index.html';
+    }
+}
+
+function showCongratulations() {
+    document.getElementById('congratulationsBanner').classList.remove('hidden');
+    document.getElementById('completeBtnFinal').textContent = '🏆 Ir al Portal Principal';
+    document.getElementById('completeBtnFinal').disabled = false;
+
+    setTimeout(() => {
+        const confirmed = confirm('Todas las fases han sido completadas. ¿Desea regresar al portal para ver su certificación?');
+        if (confirmed) {
+            window.location.href = 'index.html';
+        }
+    }, 2000);
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    if (!checkAccess()) return;
+
+    // Add change listeners to update progress
+    for (let i = 1; i <= 10; i++) {
+        const q = 'q' + i;
+        const radios = document.querySelectorAll(`input[name="${q}"]`);
+        radios.forEach(radio => {
+            radio.addEventListener('change', updateProgress);
+        });
+    }
+
+    startExam();
+});
+</script>
+</body>
+</html>

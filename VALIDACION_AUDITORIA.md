@@ -40,6 +40,12 @@ A continuación, presento el estado de los componentes requeridos:
   6. Redirección index.html -> Activa Fase 2 automáticamente.
   7. El proceso escala correctamente hasta la Modal de *"Regístrese en el Ranking"*.
 
+## 📊 6. Sincronización Global de Puntajes (Ranking)
+**Estado: Corrección Exitosa ✅**
+- **Problema Detectado:** Las fases 1, 2, 3 y 4 estaban guardando los resultados del examen de forma local, lo que impedía que `index.html` leyera los porcentajes, errores y tiempos exactos para alimentar el Dashboard y calcular el Ranking Final.
+- **Solución Implementada:** Se modificó la función `submitExam()` en **las 4 fases** para sincronizar sus resultados con las variables globales del estado (`phaseScores`, `phaseCriticalErrors`, `phaseTime`).
+- **Resultado:** Ahora el portal principal muestra el progreso exacto y el cálculo para las insignias (Bronce, Plata, Oro) o el ranking funciona correctamente en base al desempeño real.
+
 ---
 
 ### Conclusión y Notas Adicionales
