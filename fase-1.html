@@ -1,0 +1,1246 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fase 1: Diagnóstico Taxonómico de Amenazas y Vulnerabilidades | Protocolo Fortaleza</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* ═══════════════════════════════════
+           FASE 1 - SIMULADOR DE TRIAJE
+           Patrón D-F-G (Diagnóstico-Fichas-Guía)
+           ═══════════════════════════════════ */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --bg: #050B14; --bg-card: #0F172A; --bg-hover: #162032;
+            --border: #1E293B; --text: #F0F6FC; --text-sec: #94A3B8; --text-muted: #64748B;
+            --blue: #3B82F6; --cyan: #06B6D4; --green: #10B981; --amber: #F59E0B;
+            --red: #EF4444; --purple: #8B5CF6;
+            --font-d: 'Outfit', sans-serif; --font-b: 'Inter', sans-serif;
+            --radius: 12px;
+        }
+        body { font-family: var(--font-b); background: var(--bg); color: var(--text); line-height: 1.6; margin: 0; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg-card); }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+
+        /* NAV */
+        .nav { display: flex; align-items: center; justify-content: space-between; padding: 14px 28px; border-bottom: 1px solid var(--border); background: rgba(15,23,42,0.9); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 50; }
+        .nav-brand { font-family: var(--font-d); font-weight: 700; font-size: 0.95rem; color: var(--text); text-decoration: none; display: flex; align-items: center; gap: 10px; }
+        .nav-brand span { color: var(--blue); }
+        .btn-back { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border: 1px solid var(--border); border-radius: 6px; color: var(--text-sec); background: none; font-family: var(--font-b); font-size: 0.82rem; cursor: pointer; text-decoration: none; transition: all 0.2s; }
+        .btn-back:hover { border-color: var(--blue); color: var(--blue); }
+        .phase-indicator { padding: 4px 12px; background: rgba(6,182,212,0.15); color: var(--cyan); border-radius: 4px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+
+        /* CONTAINER */
+        .container { max-width: 960px; margin: 0 auto; padding: 32px 24px; }
+
+        /* HEADER */
+        .phase-header { margin-bottom: 40px; }
+        .phase-tag { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: var(--cyan); margin-bottom: 8px; }
+        .phase-title { font-family: var(--font-d); font-size: 2rem; font-weight: 800; margin-bottom: 8px; }
+        .phase-subtitle { color: var(--text-sec); font-size: 0.95rem; }
+        .phase-objective { background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.2); border-radius: 8px; padding: 16px; margin-top: 16px; font-size: 0.88rem; }
+        .phase-objective strong { color: var(--blue); }
+
+        /* MODULE SECTIONS */
+        .module { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 28px; overflow: hidden; }
+        .module-header { background: linear-gradient(135deg, #162032, var(--bg-card)); padding: 20px 24px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; }
+        .module-num { width: 36px; height: 36px; background: var(--blue); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-family: var(--font-d); font-weight: 800; font-size: 1rem; flex-shrink: 0; }
+        .module-meta {}
+        .module-label { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; font-weight: 700; }
+        .module-title { font-family: var(--font-d); font-size: 1.15rem; font-weight: 700; }
+        .module-body { padding: 24px; }
+
+        /* EXAM MODULE HEADER */
+        .module-header.exam-header { background: linear-gradient(135deg, #7C2D12, #DC2626); }
+        .module-num.exam-num { background: var(--red); }
+
+        /* COGNITIVE OBJECTIVE */
+        .cog-obj { background: rgba(16,185,129,0.06); border-left: 3px solid var(--green); padding: 14px 16px; border-radius: 0 6px 6px 0; margin-bottom: 20px; font-size: 0.88rem; }
+        .cog-obj strong { color: var(--green); }
+
+        /* OPERATIONAL DEFINITIONS BOX */
+        .definitions-box { background: rgba(139,92,246,0.08); border: 1px solid rgba(139,92,246,0.3); border-left: 4px solid var(--purple); border-radius: 8px; padding: 20px; margin-bottom: 24px; }
+        .definitions-box h4 { font-family: var(--font-d); font-size: 0.95rem; color: var(--purple); margin-bottom: 14px; font-weight: 700; }
+        .definition-item { margin-bottom: 12px; font-size: 0.88rem; }
+        .definition-item strong { color: var(--cyan); }
+        .definition-item p { color: var(--text-sec); margin: 0; }
+
+        /* TABLES */
+        .data-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; margin: 16px 0; }
+        .data-table th { text-align: left; background: #1a2640; color: var(--text); padding: 12px; font-size: 0.82rem; font-weight: 600; }
+        .data-table td { padding: 12px; border-bottom: 1px solid var(--border); vertical-align: top; color: var(--text-sec); }
+        .data-table select, .data-table input { width: 100%; padding: 8px; background: var(--bg); border: 1px solid var(--border); border-radius: 4px; color: var(--text); font-family: var(--font-b); font-size: 0.85rem; }
+        .data-table select:focus, .data-table input:focus { border-color: var(--blue); outline: none; }
+        .data-table select.correct { border-color: var(--green); background-color: rgba(16,185,129,0.1); }
+        .data-table select.incorrect { border-color: var(--red); background-color: rgba(239,68,68,0.1); }
+        .feedback-msg { font-size: 0.8rem; margin-top: 4px; }
+        .feedback-correct { color: var(--green); }
+        .feedback-incorrect { color: var(--red); }
+
+        /* THREAT GRID */
+        .threat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin: 16px 0; }
+        .threat-card { background: rgba(15,23,42,0.5); border: 1px solid var(--border); border-radius: 8px; padding: 20px; }
+        .threat-card h4 { font-family: var(--font-d); font-size: 1rem; margin-bottom: 8px; }
+        .threat-card p { font-size: 0.85rem; color: var(--text-sec); margin-bottom: 10px; }
+        .threat-card ul { padding-left: 16px; font-size: 0.83rem; color: var(--text-sec); }
+        .threat-card li { margin-bottom: 4px; }
+        .threat-card label { font-size: 0.82rem; color: var(--text-sec); display: flex; align-items: center; gap: 6px; margin-top: 10px; cursor: pointer; }
+        .threat-card input[type="radio"] { accent-color: var(--green); }
+        .border-amber { border-left: 4px solid var(--amber); }
+        .border-blue { border-left: 4px solid var(--blue); }
+        .border-red { border-left: 4px solid var(--red); }
+        .border-green { border-left: 4px solid var(--green); }
+
+        /* FLASHCARDS */
+        .flash-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin: 16px 0; }
+        .flashcard { background: rgba(15,23,42,0.5); border: 1px solid var(--border); border-radius: 8px; padding: 20px; cursor: pointer; transition: all 0.2s; }
+        .flashcard:hover { border-color: var(--blue); transform: translateY(-2px); }
+        .flash-q { font-weight: 600; font-size: 0.9rem; margin-bottom: 10px; }
+        .flash-a { display: none; border-top: 1px solid var(--border); padding-top: 10px; margin-top: 10px; font-size: 0.85rem; color: var(--green); }
+        .flashcard.open .flash-a { display: block; }
+        .flash-hint { font-size: 0.7rem; color: var(--text-muted); text-align: center; }
+        .flashcard.open .flash-hint { display: none; }
+
+        /* INPUT BOXES */
+        .input-group { margin-bottom: 14px; }
+        .input-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 4px; color: var(--text-sec); }
+        .input-group input, .input-group textarea, .input-group select { width: 100%; padding: 10px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-family: var(--font-b); font-size: 0.88rem; }
+        .input-group input:focus, .input-group textarea:focus { border-color: var(--blue); outline: none; }
+        .helper-text { font-size: 0.75rem; color: var(--text-muted); margin-top: 3px; font-style: italic; }
+
+        /* HEIGHT WARNING BOX */
+        .height-warning { background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.3); border-left: 4px solid var(--amber); border-radius: 8px; padding: 14px; margin-top: 12px; font-size: 0.85rem; color: var(--text-sec); display: none; }
+        .height-warning strong { color: var(--amber); }
+
+        /* CHECKBOXES GRID */
+        .check-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px; margin: 12px 0; }
+        .check-grid label { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: var(--text-sec); cursor: pointer; padding: 6px 10px; border-radius: 4px; transition: background 0.2s; }
+        .check-grid label:hover { background: rgba(59,130,246,0.08); }
+        .check-grid input { accent-color: var(--green); }
+
+        /* GUIDE CONCEPT BLOCK */
+        .concept-block { background: rgba(15,23,42,0.5); border: 1px solid var(--border); border-radius: 8px; padding: 20px; margin-bottom: 14px; }
+        .concept-block h4 { font-family: var(--font-d); font-size: 1rem; color: var(--blue); margin-bottom: 8px; }
+        .concept-block p { font-size: 0.88rem; color: var(--text-sec); margin-bottom: 8px; }
+        .concept-block ul { padding-left: 16px; }
+        .concept-block li { font-size: 0.85rem; color: var(--text-sec); margin-bottom: 6px; }
+
+        /* PROTOCOL FIELDS */
+        .protocol-field { background: rgba(15,23,42,0.5); border: 1px solid var(--border); border-radius: 6px; padding: 14px; margin-bottom: 12px; }
+        .protocol-field label { font-size: 0.85rem; font-weight: 600; color: var(--cyan); margin-bottom: 6px; display: block; }
+        .protocol-field input { width: 100%; padding: 8px; background: var(--bg); border: 1px solid var(--border); border-radius: 4px; color: var(--text); font-family: var(--font-b); font-size: 0.88rem; }
+
+        /* MINUTO CERO SECTION */
+        .minuto-cero-section { background: rgba(59,130,246,0.08); border: 2px solid rgba(59,130,246,0.3); border-radius: 8px; padding: 20px; margin: 20px 0; }
+        .minuto-cero-title { font-family: var(--font-d); font-size: 1.1rem; font-weight: 700; color: var(--blue); margin-bottom: 14px; }
+        .minuto-cero-subtitle { font-size: 0.85rem; color: var(--text-sec); margin-bottom: 14px; font-style: italic; }
+        .minuto-cero-rule { background: rgba(15,23,42,0.5); border-left: 3px solid var(--green); padding: 12px; margin-bottom: 10px; border-radius: 4px; font-size: 0.88rem; color: var(--text-sec); }
+        .minuto-cero-rule strong { color: var(--text); }
+
+        /* TRANSITION PARAGRAPH */
+        .transition-para { background: rgba(139,92,246,0.06); border: 1px solid rgba(139,92,246,0.2); border-left: 4px solid var(--purple); padding: 14px; margin: 20px 0; border-radius: 6px; font-size: 0.9rem; color: var(--text-sec); }
+        .transition-para strong { color: var(--purple); }
+
+        /* EXAM STYLES */
+        .exam-question { background: rgba(15,23,42,0.5); border: 1px solid var(--border); border-radius: 8px; padding: 20px; margin-bottom: 20px; }
+        .exam-question.answered { border-color: var(--green); }
+        .exam-question.unanswered { border-color: var(--amber); }
+        .exam-question h4 { font-family: var(--font-d); font-size: 1rem; margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
+        .critical-badge { color: var(--red); font-size: 1.2rem; }
+        .progress-bar { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+        .progress-fill { flex: 1; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+        .progress-inner { height: 100%; background: var(--blue); transition: width 0.3s; }
+        .exam-timer { font-family: var(--font-d); font-size: 0.9rem; color: var(--text-sec); }
+        .exam-answer-group { margin-top: 14px; }
+        .exam-answer-label { display: flex; align-items: flex-start; gap: 10px; padding: 10px; margin-bottom: 8px; background: rgba(15,23,42,0.5); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; transition: all 0.2s; }
+        .exam-answer-label:hover { background: rgba(59,130,246,0.1); border-color: var(--blue); }
+        .exam-answer-label input { margin-top: 2px; accent-color: var(--blue); flex-shrink: 0; }
+        .exam-answer-label span { flex: 1; font-size: 0.88rem; color: var(--text-sec); }
+        .exam-answer-label input:checked + span { color: var(--text); font-weight: 600; }
+
+        /* RESULTS PANEL */
+        .results-panel { background: rgba(15,23,42,0.7); border: 2px solid var(--green); border-radius: 12px; padding: 28px; margin: 24px 0; text-align: center; }
+        .results-panel.fail { border-color: var(--red); }
+        .results-title { font-family: var(--font-d); font-size: 1.8rem; font-weight: 800; margin-bottom: 16px; }
+        .results-score { font-family: var(--font-d); font-size: 3rem; font-weight: 800; color: var(--green); margin: 12px 0; }
+        .results-panel.fail .results-score { color: var(--red); }
+        .results-message { font-size: 1rem; color: var(--text-sec); margin: 12px 0; }
+        .results-details { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin: 20px 0; }
+        .result-item { background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.2); border-radius: 8px; padding: 14px; }
+        .result-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; margin-bottom: 4px; }
+        .result-value { font-family: var(--font-d); font-size: 1.4rem; font-weight: 700; color: var(--blue); }
+
+        /* COMPLETE BUTTON */
+        .btn-complete { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; max-width: 400px; margin: 32px auto; padding: 16px; background: linear-gradient(135deg, var(--green), #059669); border: none; border-radius: 8px; color: white; font-family: var(--font-b); font-size: 1rem; font-weight: 700; cursor: pointer; transition: all 0.3s; }
+        .btn-complete:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(16,185,129,0.3); }
+        .btn-complete:disabled { background: linear-gradient(135deg, #6B7280, #4B5563); cursor: not-allowed; opacity: 0.6; }
+
+        /* ACTION BUTTONS */
+        .btn-submit-exam { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; max-width: 400px; margin: 24px auto; padding: 16px; background: linear-gradient(135deg, var(--blue), #2563EB); border: none; border-radius: 8px; color: white; font-family: var(--font-b); font-size: 1rem; font-weight: 700; cursor: pointer; transition: all 0.3s; }
+        .btn-submit-exam:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(59,130,246,0.3); }
+
+        .btn-retry-exam { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; max-width: 300px; margin: 16px auto; padding: 14px; background: linear-gradient(135deg, var(--amber), #D97706); border: none; border-radius: 8px; color: white; font-family: var(--font-b); font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: all 0.3s; }
+        .btn-retry-exam:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(245,158,11,0.3); }
+
+        /* FOOTER */
+        .footer { text-align: center; padding: 24px; font-size: 0.75rem; color: var(--text-muted); border-top: 1px solid var(--border); margin-top: 40px; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        .fade-in { animation: fadeIn 0.4s ease forwards; }
+    </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+    <a href="index.html" class="btn-back">&#8592; Portal Principal</a>
+    <div class="nav-brand">PROTOCOLO <span>FORTALEZA</span></div>
+    <div class="phase-indicator">Fase 1</div>
+</nav>
+
+<div class="container">
+
+    <!-- HEADER -->
+    <div class="phase-header fade-in">
+        <div class="phase-tag">Fase 1: Diagnóstico Taxonómico de Amenazas y Vulnerabilidades</div>
+        <h1 class="phase-title">Simulador de Triaje de Riesgos</h1>
+        <div class="phase-subtitle">Identificación de Amenazas y Vulnerabilidades para Unidades Médico-Administrativas</div>
+        <div class="phase-objective">
+            <strong>Objetivo de Aprendizaje:</strong> Desarrollar la capacidad de discriminación fina entre vectores de riesgo Internos (gestión propia) y Externos (entorno), aplicando el criterio de causalidad para clasificación correcta.
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════
+         MODULO 1: DIAGNOSTICO (D)
+         Recuperación Activa
+         ═══════════════════════════════ -->
+    <div class="module fade-in">
+        <div class="module-header">
+            <div class="module-num">D</div>
+            <div class="module-meta">
+                <div class="module-label">Módulo 01: Diagnóstico</div>
+                <div class="module-title">Taxonomía de Riesgos (Recuperación Activa)</div>
+            </div>
+        </div>
+        <div class="module-body">
+            <div class="cog-obj">
+                <strong>Instrucción Cognitiva:</strong> Analice las siguientes definiciones técnicas. No adivine; aplique el criterio de causalidad para seleccionar la clasificación correcta. Este ejercicio calibra su modelo mental actual.
+            </div>
+
+            <!-- OPERATIONAL DEFINITIONS BLOCK -->
+            <div class="definitions-box">
+                <h4>Definiciones Operacionales</h4>
+                <div class="definition-item">
+                    <strong>Amenaza:</strong>
+                    <p>Evento o fenómeno potencialmente dañino de origen natural, socio-natural o antrópico.</p>
+                </div>
+                <div class="definition-item">
+                    <strong>Vulnerabilidad:</strong>
+                    <p>Debilidad interna de la instalación o la organización que incrementa la afectación ante una amenaza.</p>
+                </div>
+                <div class="definition-item">
+                    <strong>Riesgo:</strong>
+                    <p>Probabilidad de que una amenaza explote una vulnerabilidad y cause daño. Se calcula como: Riesgo = Amenaza × Vulnerabilidad.</p>
+                </div>
+                <div class="definition-item">
+                    <strong>Causalidad:</strong>
+                    <p>Origen del fenómeno — interno (dentro de la instalación), externo (fuera) o mixto (ambos).</p>
+                </div>
+            </div>
+
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th style="width:20%">Fenómeno</th>
+                        <th style="width:50%">Definición Técnica</th>
+                        <th style="width:30%">Juicio Experto</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Colapso Estructural</strong></td>
+                        <td>Disminución de la resistencia de una estructura provocando incapacidad de función y pérdida de estabilidad. Puede derivar de fatiga de materiales o sobrecarga.</td>
+                        <td>
+                            <select onchange="checkAnswer(this, 'ambos')">
+                                <option value="">-- Seleccione Causalidad --</option>
+                                <option value="interno">Interno (Fallo Mantenimiento)</option>
+                                <option value="externo">Externo (Sismo/Impacto)</option>
+                                <option value="ambos">Interno y Externo</option>
+                            </select>
+                            <div class="feedback-msg" style="display:none;"></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Clima Laboral Adverso</strong></td>
+                        <td>Fricción organizacional, conflictos interpersonales, potencial huelgas o sabotaje interno que afecta operatividad.</td>
+                        <td>
+                            <select onchange="checkAnswer(this, 'interno')">
+                                <option value="">-- Seleccione Causalidad --</option>
+                                <option value="interno">Interno (Organización)</option>
+                                <option value="externo">Externo (Entorno)</option>
+                                <option value="ambos">Interno y Externo</option>
+                            </select>
+                            <div class="feedback-msg" style="display:none;"></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Conflictividad Social Externa</strong></td>
+                        <td>Protestas, bloqueos, vandalismo del entorno que afectan acceso a la instalación desde el exterior.</td>
+                        <td>
+                            <select onchange="checkAnswer(this, 'externo')">
+                                <option value="">-- Seleccione Causalidad --</option>
+                                <option value="interno">Interno (Organización)</option>
+                                <option value="externo">Externo (Entorno)</option>
+                                <option value="ambos">Interno y Externo</option>
+                            </select>
+                            <div class="feedback-msg" style="display:none;"></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Deslizamiento</strong></td>
+                        <td>Desplazamiento ladera abajo de una masa de material sobre superficies de rotura con intensa deformación de cizalla.</td>
+                        <td>
+                            <select onchange="checkAnswer(this, 'externo')">
+                                <option value="">-- Seleccione Causalidad --</option>
+                                <option value="externo">Externo (Geológico)</option>
+                                <option value="interno">Interno</option>
+                                <option value="ambos">Interno y Externo</option>
+                            </select>
+                            <div class="feedback-msg" style="display:none;"></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Incendio</strong></td>
+                        <td>Reacción química de oxidación rápida que requiere combustible, oxígeno y fuente de ignición.</td>
+                        <td>
+                            <select onchange="checkAnswer(this, 'ambos')">
+                                <option value="">-- Seleccione Causalidad --</option>
+                                <option value="interno">Interno (Fallo Eléctrico)</option>
+                                <option value="externo">Externo (Impacto)</option>
+                                <option value="ambos">Interno y Externo</option>
+                            </select>
+                            <div class="feedback-msg" style="display:none;"></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Inundación</strong></td>
+                        <td>Desbordamiento de agua por lluvias extremas, colapso de drenajes o proximidad a cuerpos de agua.</td>
+                        <td>
+                            <select onchange="checkAnswer(this, 'externo')">
+                                <option value="">-- Seleccione Causalidad --</option>
+                                <option value="interno">Interno (Fallo Plomería)</option>
+                                <option value="externo">Externo (Meteorológico)</option>
+                                <option value="ambos">Interno y Externo</option>
+                            </select>
+                            <div class="feedback-msg" style="display:none;"></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Contaminación Ambiental</strong></td>
+                        <td>Presencia de elementos nocivos para la salud humana, agua, tierra o aire.</td>
+                        <td>
+                            <select onchange="checkAnswer(this, 'ambos')">
+                                <option value="">-- Seleccione Causalidad --</option>
+                                <option value="ambos">Interno y Externo</option>
+                                <option value="interno">Solo Interno</option>
+                                <option value="externo">Solo Externo</option>
+                            </select>
+                            <div class="feedback-msg" style="display:none;"></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Vulnerabilidad Sistémica</strong></td>
+                        <td>Degradación por ciclo de vida de infraestructura (ej. edificaciones anteriores a 1980). Incluye fatiga de sistemas eléctricos, plomería obsoleta, materiales degradados que provocan fallos en cascada.</td>
+                        <td>
+                            <select onchange="checkAnswer(this, 'interno')">
+                                <option value="">-- Seleccione Causalidad --</option>
+                                <option value="interno">Interno (Mantenimiento)</option>
+                                <option value="externo">Externo (Entorno)</option>
+                                <option value="ambos">Interno y Externo</option>
+                            </select>
+                            <div class="feedback-msg" style="display:none;"></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Epidemia</strong></td>
+                        <td>Enfermedad que se propaga durante un tiempo por un país, afectando simultáneamente a gran número de personas.</td>
+                        <td>
+                            <select onchange="checkAnswer(this, 'externo')">
+                                <option value="">-- Seleccione Causalidad --</option>
+                                <option value="externo">Externo (Sanitario)</option>
+                                <option value="interno">Interno</option>
+                                <option value="ambos">Interno y Externo</option>
+                            </select>
+                            <div class="feedback-msg" style="display:none;"></div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3 style="font-family:var(--font-d); font-size:1.05rem; margin: 24px 0 12px;">Auditoría de Contexto</h3>
+
+            <div class="threat-grid">
+                <div class="input-group">
+                    <label>Colaboradores Fijos (Personal administrativo y médico):</label>
+                    <input type="number" placeholder="Ej: 150">
+                    <div class="helper-text">Incluya personal de planta, no contratistas temporales</div>
+                </div>
+                <div class="input-group">
+                    <label>Flujo de Visitantes/Pacientes por día:</label>
+                    <input type="number" placeholder="Ej: 300" id="dailyFlow">
+                    <div class="helper-text">Promedio diario estimado en día laboral normal</div>
+                </div>
+                <div class="input-group">
+                    <label>Niveles del Edificio:</label>
+                    <input type="number" placeholder="Ej: 4" id="buildingLevels" onchange="checkBuildingHeight()">
+                    <div class="helper-text">Incluya sótanos y mezzanines</div>
+                </div>
+                <div class="input-group">
+                    <label>Dirección Geoespacial Exacta:</label>
+                    <input type="text" placeholder="Ej: 9a Calle 7-54 Zona 9, Guatemala">
+                    <div class="helper-text">Dirección completa con zona</div>
+                </div>
+            </div>
+
+            <div class="height-warning" id="heightWarning">
+                <strong>⚠️ Edificio de altura significativa:</strong> Se requiere evaluación estructural especializada, verificación de escaleras de emergencia en cada nivel, y plan de evacuación vertical conforme NRD-2 Artículo 18.
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════
+         MODULO 2: FICHAS TECNICAS (F)
+         Repetición Espaciada
+         ═══════════════════════════════ -->
+    <div class="module fade-in">
+        <div class="module-header">
+            <div class="module-num" style="background:var(--amber);">F</div>
+            <div class="module-meta">
+                <div class="module-label">Módulo 02: Fichas Técnicas</div>
+                <div class="module-title">Categorización de Amenazas (Repetición Espaciada)</div>
+            </div>
+        </div>
+        <div class="module-body">
+            <div class="cog-obj">
+                <strong>Mecanismo:</strong> Categorización precisa de fenómenos basada en la física del evento y su origen (Natural vs. Antrópico). Seleccione el nivel apropiado de ocurrencia en su zona.
+            </div>
+
+            <div class="threat-grid">
+                <article class="threat-card border-amber">
+                    <h4>Amenazas Geológicas</h4>
+                    <p><strong>Concepto Clave:</strong> Movimientos de masa y tectónica.</p>
+                    <ul>
+                        <li><strong>Sísmicos:</strong> Sacudida brusca por liberación de energía en fallas geológicas.</li>
+                        <li><strong>Vulcanológicos:</strong> Caída de ceniza (material &lt; 2mm) o flujos piroclásticos (PDC).</li>
+                        <li><strong>Deslizamientos:</strong> Desplazamiento de masa ladera abajo.</li>
+                    </ul>
+                    <label><input type="radio" name="geo_threat"> Ha ocurrido históricamente</label>
+                    <label><input type="radio" name="geo_threat"> Es plausible pero no ha ocurrido</label>
+                    <label><input type="radio" name="geo_threat"> No aplica en mi ubicación</label>
+                </article>
+
+                <article class="threat-card border-blue">
+                    <h4>Amenazas Hidrometeorológicas</h4>
+                    <p><strong>Concepto Clave:</strong> Dinámica de fluidos y atmósfera.</p>
+                    <ul>
+                        <li><strong>Inundación:</strong> Desbordamiento por lluvias o colapso de drenajes.</li>
+                        <li><strong>Vientos:</strong> Ráfagas, turbonadas o huracanes según intensidad.</li>
+                        <li><strong>Sequías:</strong> Déficit prolongado de precipitación.</li>
+                    </ul>
+                    <label><input type="radio" name="hydro_threat"> Ha ocurrido históricamente</label>
+                    <label><input type="radio" name="hydro_threat"> Es plausible pero no ha ocurrido</label>
+                    <label><input type="radio" name="hydro_threat"> No aplica en mi ubicación</label>
+                </article>
+
+                <article class="threat-card border-red">
+                    <h4>Amenazas Socio-Organizativas</h4>
+                    <p><strong>Concepto Clave:</strong> Comportamiento de masas y seguridad.</p>
+                    <ul>
+                        <li><strong>Terrorismo:</strong> Actos criminales para crear terror.</li>
+                        <li><strong>Concentraciones Masivas:</strong> Reunión de gran aforo.</li>
+                        <li><strong>Delincuencia:</strong> Actos que atentan contra la integridad.</li>
+                    </ul>
+                    <label><input type="radio" name="socio_threat"> Ha ocurrido históricamente</label>
+                    <label><input type="radio" name="socio_threat"> Es plausible pero no ha ocurrido</label>
+                    <label><input type="radio" name="socio_threat"> No aplica en mi ubicación</label>
+                </article>
+
+                <article class="threat-card border-green">
+                    <h4>Amenazas Sanitarias</h4>
+                    <p><strong>Concepto Clave:</strong> Bioseguridad y vectores.</p>
+                    <ul>
+                        <li><strong>Contaminación Microbiológica:</strong> Bacterias, virus o priones.</li>
+                        <li><strong>Zoonosis:</strong> Enfermedades animales-humanos.</li>
+                        <li><strong>Epidemias/Pandemias:</strong> Propagación masiva.</li>
+                    </ul>
+                    <label><input type="radio" name="sanitary_threat"> Ha ocurrido históricamente</label>
+                    <label><input type="radio" name="sanitary_threat"> Es plausible pero no ha ocurrido</label>
+                    <label><input type="radio" name="sanitary_threat"> No aplica en mi ubicación</label>
+                </article>
+            </div>
+
+            <h3 style="font-family:var(--font-d); font-size:1.05rem; margin: 24px 0 12px;">Flashcards de Repaso Rápido</h3>
+
+            <div class="flash-grid">
+                <div class="flashcard" onclick="this.classList.toggle('open')">
+                    <div class="flash-q">¿Qué son los flujos piroclásticos (PDC)?</div>
+                    <div class="flash-a"><strong>Mezcla de fragmentos volcánicos, gases y aire que desciende a alta velocidad por laderas volcánicas.</strong> Son la amenaza volcánica más letal.</div>
+                    <div class="flash-hint">Clic para revelar</div>
+                </div>
+                <div class="flashcard" onclick="this.classList.toggle('open')">
+                    <div class="flash-q">¿Cuál es la diferencia entre Riesgo Interno y Externo?</div>
+                    <div class="flash-a"><strong>Interno:</strong> Se origina dentro de la organización (fallo mantenimiento, clima laboral). <strong>Externo:</strong> Proviene del entorno (sismo, inundación, protestas).</div>
+                    <div class="flash-hint">Clic para revelar</div>
+                </div>
+                <div class="flashcard" onclick="this.classList.toggle('open')">
+                    <div class="flash-q">¿Qué es la Carga de Ocupación y por qué importa aquí?</div>
+                    <div class="flash-a"><strong>CO = Área / Factor de Uso.</strong> Determina cuántas personas hay en riesgo y define las salidas necesarias. Es el dato base para todo el plan.</div>
+                    <div class="flash-hint">Clic para revelar</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TRANSITION PARAGRAPH -->
+    <div class="transition-para fade-in">
+        <strong>Paso Siguiente:</strong> Una vez identificadas y clasificadas las amenazas según su taxonomía y causalidad, el siguiente paso es definir cómo se activará la respuesta inicial de la unidad ante un evento real.
+    </div>
+
+    <!-- ═══════════════════════════════
+         MODULO 3: GUIA DE ESTUDIO (G)
+         Metacognición
+         ═══════════════════════════════ -->
+    <div class="module fade-in">
+        <div class="module-header">
+            <div class="module-num" style="background:var(--green);">G</div>
+            <div class="module-meta">
+                <div class="module-label">Módulo 03: Guía de Estudio</div>
+                <div class="module-title">Protocolos de Respuesta (Metacognición)</div>
+            </div>
+        </div>
+        <div class="module-body">
+            <div class="cog-obj">
+                <strong>Objetivo Metacognitivo:</strong> Establecer redundancia comunicacional para mitigar el caos psicológico durante el "Minuto Cero" de la emergencia. No memorice; comprenda la lógica de supervivencia.
+            </div>
+
+            <div class="concept-block">
+                <h4>I. Mecanismos de Comunicación de Emergencia</h4>
+                <p>Seleccione los mecanismos sensoriales disponibles en su instalación. El uso multimodal (visual + auditivo) aumenta la velocidad de reacción.</p>
+                <div class="check-grid">
+                    <label><input type="checkbox"> Banderas (Visual)</label>
+                    <label><input type="checkbox"> Luces Rotativas (Visual)</label>
+                    <label><input type="checkbox"> Megáfono (Auditivo-Verbal)</label>
+                    <label><input type="checkbox"> Radiotransmisor (Coord.)</label>
+                    <label><input type="checkbox"> Silbatos (Auditivo-Alerta)</label>
+                    <label><input type="checkbox"> Sirena (Masivo)</label>
+                    <label><input type="checkbox"> Sistema Alarma (Auto)</label>
+                    <label><input type="checkbox"> Teléfono (Punto a Punto)</label>
+                </div>
+            </div>
+
+            <div class="concept-block">
+                <h4>II. Protocolo Estructurado de Comunicación</h4>
+                <p>Defina los 5 pasos clave de la cadena de comunicación en su unidad:</p>
+                <div class="protocol-field">
+                    <label>1. Emisor Inicial — ¿Quién detecta y reporta la emergencia?</label>
+                    <input type="text" placeholder="Ej: Operario de planta, guardia de seguridad, personal administrativo">
+                </div>
+                <div class="protocol-field">
+                    <label>2. Medio de Aviso — ¿Por qué canal se comunica? (alarma, radio, megáfono, WhatsApp)</label>
+                    <input type="text" placeholder="Ej: Alarma de humo → Radio → Coordinador central">
+                </div>
+                <div class="protocol-field">
+                    <label>3. Receptor Responsable — ¿Quién recibe el aviso y toma decisiones?</label>
+                    <input type="text" placeholder="Ej: Coordinador de turno, Jefe de Seguridad, Director médico">
+                </div>
+                <div class="protocol-field">
+                    <label>4. Confirmación de Recepción — ¿Cómo se verifica que el mensaje fue recibido?</label>
+                    <input type="text" placeholder="Ej: Respuesta verbal por radio, confirmación visual de acción">
+                </div>
+                <div class="protocol-field">
+                    <label>5. Escalamiento — ¿A quién se notifica si no hay respuesta en 60 segundos?</label>
+                    <input type="text" placeholder="Ej: Director, Junta de Emergencia, Números de emergencia externos">
+                </div>
+            </div>
+
+            <!-- MINUTO CERO SECTION -->
+            <div class="minuto-cero-section">
+                <div class="minuto-cero-title">Protocolo del Minuto Cero</div>
+                <div class="minuto-cero-subtitle">Los primeros 60 segundos: Heurísticas de acción inmediata</div>
+                <div class="minuto-cero-rule">
+                    <strong>1. Si escucha la alarma:</strong> DETÉNGASE, UBÍQUESE, EVACÚE por la ruta más cercana
+                </div>
+                <div class="minuto-cero-rule">
+                    <strong>2. Si detecta humo o fuego:</strong> ACTIVE la alarma, NOTIFIQUE al brigadista de piso, NO use elevadores
+                </div>
+                <div class="minuto-cero-rule">
+                    <strong>3. Si siente un sismo:</strong> PROTÉJASE bajo estructura sólida, ALÉJESE de ventanas, ESPERE instrucciones
+                </div>
+            </div>
+
+            <div class="concept-block">
+                <h4>III. Principios de la Fase 1</h4>
+                <ul>
+                    <li><strong>La seguridad no es un accidente,</strong> es una construcción sistemática (Ingeniería).</li>
+                    <li><strong>La respuesta eficiente depende del entrenamiento mental previo,</strong> no de la suerte (Psicología).</li>
+                    <li><strong>Este diagnóstico inicial</strong> es el cimiento para el Plan de Respuesta Institucional completo.</li>
+                    <li><strong>Un riesgo mal clasificado</strong> genera un protocolo equivocado. La precisión taxonómica salva vidas.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- VIDEO EDUCATIVO -->
+    <div class="module fade-in">
+        <div class="module-header">
+            <div class="module-num" style="background:var(--red);">&#9654;</div>
+            <div class="module-meta">
+                <div class="module-label">Material Audiovisual</div>
+                <div class="module-title">Video: Identificación de Riesgos</div>
+            </div>
+        </div>
+        <div class="module-body">
+            <div class="cog-obj">
+                <strong>Codificación Dual:</strong> Vea el video para reforzar los conceptos de esta fase mediante el canal visual-auditivo. Esto duplica la retención según la teoría de Paivio.
+            </div>
+            <div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:8px;margin-top:12px;">
+                <iframe src="https://www.youtube.com/embed/NMixBDBYDxw" style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;" allowfullscreen></iframe>
+            </div>
+            <div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:8px;margin-top:16px;">
+                <iframe src="https://www.youtube.com/embed/cHIe0Ldh7OI" style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;" allowfullscreen></iframe>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════
+         MODULO E: EVALUACION
+         Examen de Competencia
+         ═══════════════════════════════ -->
+    <div class="module fade-in" id="examModule">
+        <div class="module-header exam-header">
+            <div class="module-num exam-num">E</div>
+            <div class="module-meta">
+                <div class="module-label">Módulo E: Evaluación</div>
+                <div class="module-title">Examen de Competencia - Diagnóstico de Amenazas</div>
+            </div>
+        </div>
+        <div class="module-body">
+            <div class="cog-obj">
+                <strong>Instrucción del Examen:</strong> Responda todas las 10 preguntas basadas en los contenidos de esta fase. Se requiere 70% de aciertos (7 puntos) para completar la fase. Las preguntas marcadas con ⚠️ son críticas para la seguridad de vida.
+            </div>
+
+            <div class="progress-bar">
+                <div>
+                    <span id="progressText" style="font-size:0.9rem; color:var(--text-sec);">Pregunta 0 de 10</span>
+                </div>
+                <div class="progress-fill">
+                    <div class="progress-inner" id="progressInner" style="width:0%"></div>
+                </div>
+                <div class="exam-timer">Tiempo: <span id="timerDisplay">0:00</span></div>
+            </div>
+
+            <div id="examContent">
+                <!-- Pregunta 1 -->
+                <div class="exam-question" id="q1">
+                    <h4>
+                        <span style="font-family:var(--font-d);">Pregunta 1 de 10</span>
+                    </h4>
+                    <p style="font-size:0.95rem; margin-top:8px; color:var(--text);">¿Cuál es el primer paso del protocolo de diagnóstico de amenazas según NRD-2?</p>
+                    <div class="exam-answer-group">
+                        <label class="exam-answer-label">
+                            <input type="radio" name="q1" value="a"> <span>a) Instalar extintores</span>
+                        </label>
+                        <label class="exam-answer-label">
+                            <input type="radio" name="q1" value="b"> <span>b) Identificar y clasificar las amenazas del entorno</span>
+                        </label>
+                        <label class="exam-answer-label">
+                            <input type="radio" name="q1" value="c"> <span>c) Capacitar al personal</span>
+                        </label>
+                        <label class="exam-answer-label">
+                            <input type="radio" name="q1" value="d"> <span>d) Llamar a los bomberos</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Pregunta 2 - CRITICAL -->
+                <div class="exam-question" id="q2">
+                    <h4>
+                        <span class="critical-badge">⚠️</span>
+                        <span style="font-family:var(--font-d);">Pregunta 2 de 10 (CRÍTICA)</span>
+                    </h4>
+                    <p style="font-size:0.95rem; margin-top:8px; color:var(--text);">¿Qué tipo de amenaza representa un terremoto?</p>
+                    <div class="exam-answer-group">
+                        <label class="exam-answer-label">
+                            <input type="radio" name="q2" value="a"> <span>a) Socio-organizativa</span>
+                        </label>
+                        <label class="exam-answer-label">
+                            <input type="radio" name="q2" value="b"> <span>b) Sanitaria</span>
+                        </label>
+                        <label class="exam-answer-label">
+                            <input type="radio" name="q2" value="c"> <span>c) Geológica</span>
+                        </label>
+                        <label class="exam-answer-label">
+                            <input type="radio" name="q2" value="d"> <span>d) Hidrometeorológica</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Pregunta 3 -->
+                <div class="exam-question" id="q3">
+                    <h4>
+                        <span style="font-family:var(--font-d);">Pregunta 3 de 10</span>
+                    </h4>
+                    <p style="font-size:0.95rem; margin-top:8px; color:var(--text);">¿Cuál es la diferencia entre una amenaza interna y una externa?</p>
+                    <div class="exam-answer-group">
+                        <label class="exam-answer-label">
+                            <input type="radio" name="q3" value="a"> <span>a) Las internas son más peligrosas</span>
+                        </label>
+                        <label class="exam-answer-label">
+                            <input type="radio" name="q3" value="b"> <span>b) Las internas se originan dentro de la instalación, las externas fuera de ella</span>
+                        </label>
+                        <label class="exam-answer-label">
+                            <input type="radio" name="q3" value="c"> <span>c) No existe diferencia</span>
+                        </label>
+                        <label class="exam-answer-label">
+                            <input type="radio" name="q3" value="d"> <span>d) Las externas solo incluyen fenómenos naturales</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Pregunta 4 -->
+                <div class="exam-question" id="q4">
+                    <h4>
+                        <span style="font-family:var(--font-d);">Pregunta 4 de 10</span>
+                    </h4>
+                    <p style="font-size:0.95rem; margin-top:8px; color:var(--text);">¿Qué documento establece las normas mínimas de seguridad en edificaciones de Guatemala?</p>
+                    <div class="exam-answer-group">
+                        <label class="exam-answer-label">
+                            <input type="radio" name="q4" value="a"> <span>a) Código Municipal</span>
+                        </label>
+                        <label class="exam-answer-label">
+                            <input type="radio" name="q4" value="b"> <span>b) NRD-2 de CONRED</span>
+                        </label>
+                        <label class="exam-answer-label">
+                            <input type="radio" name="q4" value="c"> <span>c) Reglamento de Construcción</span>
+                        </label>
+                        <label class="exam-answer-label">
+                            <input type="radio" name="q4" value="d"> <span>d) Ley de Protección Civil</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Pregunta 5 - CRITICAL -->
+                <div class="exam-question" id="q5">
+                    <h4>
+                        <span class="critical-badge">⚠️</span>
+                        <span style="font-family:var(--font-d);">Pregunta 5 de 10 (CRÍTICA)</span>
+                    </h4>
+                    <p style="font-size:0.95rem; margin-top:8px; color:var(--text);">En caso de identificar una amenaza sísmica, ¿cuál es la acción prioritaria?</p>
+                    <div class="exam-answer-group">
+                        <label class="exam-answer-label">
+                            <input type="radio" name="q5" value="a"> <span>a) Evacuar inmediatamente sin evaluar</span>
+                        </label>
+                        <label class="exam-answer-label">
+                            <input type="radio" name="q5" value="b"> <span>b) Evaluar la estructura y establecer rutas de evacuación</span>
+                        </label>
+                        <label class="exam-answer-label">
+                            <input type="radio" name="q5" value="c"> <span>c) Esperar instrucciones del gobierno</span>
+                        </label>
+                        <label class="exam-answer-label">
+                            <input type="radio" name="q5" value="d"> <span>d) Cerrar todas las puertas</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Pregunta 6 -->
+                <div class="exam-question" id="q6">
+                    <h4>
+                        <span style="font-family:var(--font-d);">Pregunta 6 de 10</span>
+                    </h4>
+                    <p style="font-size:0.95rem; margin-top:8px; color:var(--text);">¿Qué categoría de amenaza incluye las inundaciones?</p>
+                    <div class="exam-answer-group">
+                        <label class="exam-answer-label">
+                            <input type="radio" name="q6" value="a"> <span>a) Geológica</span>
+                        </label>
+                        <label class="exam-answer-label">
+                            <input type="radio" name="q6" value="b"> <span>b) Hidrometeorológica</span>
+                        </label>
+                        <label class="exam-answer-label">
+                            <input type="radio" name="q6" value="c"> <span>c) Sanitaria</span>
+                        </label>
+                        <label class="exam-answer-label">
+                            <input type="radio" name="q6" value="d"> <span>d) Socio-organizativa</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Pregunta 7 -->
+                <div class="exam-question" id="q7">
+                    <h4>
+                        <span style="font-family:var(--font-d);">Pregunta 7 de 10</span>
+                    </h4>
+                    <p style="font-size:0.95rem; margin-top:8px; color:var(--text);">¿Cuál es el propósito de la matriz de riesgos en el diagnóstico?</p>
+                    <div class="exam-answer-group">
+                        <label class="exam-answer-label">
+                            <input type="radio" name="q7" value="a"> <span>a) Decorar el informe</span>
+                        </label>
+                        <label class="exam-answer-label">
+                            <input type="radio" name="q7" value="b"> <span>b) Priorizar amenazas según probabilidad e impacto</span>
+                        </label>
+                        <label class="exam-answer-label">
+                            <input type="radio" name="q7" value="c"> <span>c) Cumplir con un requisito legal únicamente</span>
+                        </label>
+                        <label class="exam-answer-label">
+                            <input type="radio" name="q7" value="d"> <span>d) Registrar los nombres del personal</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Pregunta 8 -->
+                <div class="exam-question" id="q8">
+                    <h4>
+                        <span style="font-family:var(--font-d);">Pregunta 8 de 10</span>
+                    </h4>
+                    <p style="font-size:0.95rem; margin-top:8px; color:var(--text);">¿Qué tipo de amenaza representa una pandemia?</p>
+                    <div class="exam-answer-group">
+                        <label class="exam-answer-label">
+                            <input type="radio" name="q8" value="a"> <span>a) Geológica</span>
+                        </label>
+                        <label class="exam-answer-label">
+                            <input type="radio" name="q8" value="b"> <span>b) Hidrometeorológica</span>
+                        </label>
+                        <label class="exam-answer-label">
+                            <input type="radio" name="q8" value="c"> <span>c) Sanitaria</span>
+                        </label>
+                        <label class="exam-answer-label">
+                            <input type="radio" name="q8" value="d"> <span>d) Socio-organizativa</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Pregunta 9 - CRITICAL -->
+                <div class="exam-question" id="q9">
+                    <h4>
+                        <span class="critical-badge">⚠️</span>
+                        <span style="font-family:var(--font-d);">Pregunta 9 de 10 (CRÍTICA)</span>
+                    </h4>
+                    <p style="font-size:0.95rem; margin-top:8px; color:var(--text);">Al detectar una fuga de gas en la instalación, ¿cuál es el protocolo correcto?</p>
+                    <div class="exam-answer-group">
+                        <label class="exam-answer-label">
+                            <input type="radio" name="q9" value="a"> <span>a) Encender ventiladores para disipar el gas</span>
+                        </label>
+                        <label class="exam-answer-label">
+                            <input type="radio" name="q9" value="b"> <span>b) Evacuar, cortar suministro y notificar a brigada de emergencia</span>
+                        </label>
+                        <label class="exam-answer-label">
+                            <input type="radio" name="q9" value="c"> <span>c) Continuar actividades normales hasta que se disipe</span>
+                        </label>
+                        <label class="exam-answer-label">
+                            <input type="radio" name="q9" value="d"> <span>d) Encender luces para mejor visibilidad</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Pregunta 10 -->
+                <div class="exam-question" id="q10">
+                    <h4>
+                        <span style="font-family:var(--font-d);">Pregunta 10 de 10</span>
+                    </h4>
+                    <p style="font-size:0.95rem; margin-top:8px; color:var(--text);">¿Con qué frecuencia debe actualizarse el diagnóstico de amenazas según buenas prácticas NRD-2?</p>
+                    <div class="exam-answer-group">
+                        <label class="exam-answer-label">
+                            <input type="radio" name="q10" value="a"> <span>a) Cada 10 años</span>
+                        </label>
+                        <label class="exam-answer-label">
+                            <input type="radio" name="q10" value="b"> <span>b) Solo cuando ocurre un desastre</span>
+                        </label>
+                        <label class="exam-answer-label">
+                            <input type="radio" name="q10" value="c"> <span>c) Al menos una vez al año o cuando cambien las condiciones</span>
+                        </label>
+                        <label class="exam-answer-label">
+                            <input type="radio" name="q10" value="d"> <span>d) Nunca, una vez es suficiente</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn-submit-exam" onclick="submitExam()" id="submitBtn">
+                ✓ Enviar Examen
+            </button>
+
+            <!-- RESULTS PANEL (hidden until submitted) -->
+            <div id="resultsPanel" style="display:none;">
+                <div class="results-panel" id="resultsPanelContent">
+                    <div class="results-title" id="resultsTitle">Examen Completado</div>
+                    <div class="results-score" id="resultsScore">0%</div>
+                    <div class="results-message" id="resultsMessage">Cargando resultados...</div>
+                    <div class="results-details">
+                        <div class="result-item">
+                            <div class="result-label">Aciertos</div>
+                            <div class="result-value" id="resultsCorrect">0/10</div>
+                        </div>
+                        <div class="result-item">
+                            <div class="result-label">Errores Críticos</div>
+                            <div class="result-value" id="resultsCritical">0</div>
+                        </div>
+                        <div class="result-item">
+                            <div class="result-label">Tiempo Empleado</div>
+                            <div class="result-value" id="resultsTime">0:00</div>
+                        </div>
+                        <div class="result-item">
+                            <div class="result-label">Requerimiento</div>
+                            <div class="result-value" style="color:var(--green);">70%</div>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn-retry-exam" onclick="retryExam()" id="retryBtn" style="display:none;">
+                    ↺ Reintentar Examen
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- COMPLETE BUTTON -->
+    <button class="btn-complete" onclick="completePhase(1)" id="completeBtn" disabled>
+        &#10004; Completar Fase 1 y Desbloquear Fase 2
+    </button>
+
+    <div class="footer">
+        Protocolo Fortaleza v2.0 | Fase 1: Diagnóstico Taxonómico de Amenazas y Vulnerabilidades<br>
+        Basado en evidencia: Recuperación Activa • Repetición Espaciada • Metacognición • Evaluación 70% Rule
+    </div>
+</div>
+
+<script>
+// ════════════════════════════════════════════════════════════
+// IMMEDIATE FEEDBACK FOR RISK TABLE
+// ════════════════════════════════════════════════════════════
+const correctAnswers = {
+    'colapso': 'ambos',
+    'clima': 'interno',
+    'conflictividad_ext': 'externo',
+    'deslizamiento': 'externo',
+    'incendio': 'ambos',
+    'inundacion': 'externo',
+    'contaminacion': 'ambos',
+    'vulnerabilidad_sistematica': 'interno',
+    'epidemia': 'externo'
+};
+
+function checkAnswer(selectElement, correctValue) {
+    const selectedValue = selectElement.value;
+    const feedbackDiv = selectElement.parentElement.querySelector('.feedback-msg');
+
+    if (selectedValue === '') {
+        feedbackDiv.style.display = 'none';
+        selectElement.classList.remove('correct', 'incorrect');
+    } else if (selectedValue === correctValue) {
+        selectElement.classList.add('correct');
+        selectElement.classList.remove('incorrect');
+        feedbackDiv.textContent = '✓ Correcto';
+        feedbackDiv.className = 'feedback-msg feedback-correct';
+        feedbackDiv.style.display = 'block';
+    } else {
+        selectElement.classList.add('incorrect');
+        selectElement.classList.remove('correct');
+        feedbackDiv.textContent = '✗ Incorrecto. La respuesta correcta es: ' + correctValue;
+        feedbackDiv.className = 'feedback-msg feedback-incorrect';
+        feedbackDiv.style.display = 'block';
+    }
+}
+
+// ════════════════════════════════════════════════════════════
+// BUILDING HEIGHT WARNING
+// ════════════════════════════════════════════════════════════
+function checkBuildingHeight() {
+    const heightInput = document.getElementById('buildingLevels');
+    const warningBox = document.getElementById('heightWarning');
+    const levels = parseInt(heightInput.value);
+
+    if (levels > 3) {
+        warningBox.style.display = 'block';
+    } else {
+        warningBox.style.display = 'none';
+    }
+}
+
+// ════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════
+// SECURITY FUNCTIONS - HASH INTEGRITY
+// ════════════════════════════════════════════════════════════
+function computeHash(data) {
+    const salt = 'PF_NRD2_2026';
+    const str = salt + JSON.stringify(data);
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+        const char = str.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash;
+    }
+    return hash.toString(36);
+}
+
+function getState() {
+    try {
+        const raw = localStorage.getItem('pf_session');
+        if (!raw) return null;
+        const state = JSON.parse(raw);
+        const storedHash = state._hash;
+        const stateWithoutHash = {...state};
+        delete stateWithoutHash._hash;
+        if (computeHash(stateWithoutHash) !== storedHash) {
+            alert('⚠️ Se detectó manipulación de datos. La sesión ha sido reiniciada.');
+            localStorage.removeItem('pf_session');
+            window.location.href = 'index.html';
+            return null;
+        }
+        return state;
+    } catch(e) {
+        return null;
+    }
+}
+
+function saveState(state) {
+    try {
+        const stateToSave = {...state};
+        delete stateToSave._hash;
+        stateToSave._hash = computeHash(stateToSave);
+        localStorage.setItem('pf_session', JSON.stringify(stateToSave));
+    } catch(e) {
+        console.error('Error saving state');
+    }
+}
+
+// NAVIGATION GUARD - LOGIN CHECK
+// ════════════════════════════════════════════════════════════
+function checkLogin() {
+    const state = getState();
+
+    if (!state || !state.loggedIn) {
+        alert('Acceso denegado. Debe iniciar sesión primero.');
+        window.location.href = 'index.html';
+        return false;
+    }
+    return true;
+}
+
+// ════════════════════════════════════════════════════════════
+// EXAM ENGINE
+// ════════════════════════════════════════════════════════════
+const examAnswers = {
+    q1: 'b',  // Identificar y clasificar
+    q2: 'c',  // Geológica (CRITICAL)
+    q3: 'b',  // Se originan dentro/fuera
+    q4: 'b',  // NRD-2 de CONRED
+    q5: 'b',  // Evaluar estructura (CRITICAL)
+    q6: 'b',  // Hidrometeorológica
+    q7: 'b',  // Priorizar amenazas
+    q8: 'c',  // Sanitaria
+    q9: 'b',  // Evacuar, cortar, notificar (CRITICAL)
+    q10: 'c'  // Al menos una vez al año
+};
+
+const criticalQuestions = ['q2', 'q5', 'q9'];
+
+let examStartTime = null;
+let timerInterval = null;
+
+function startExamTimer() {
+    examStartTime = performance.now();
+    timerInterval = setInterval(updateTimer, 1000);
+}
+
+function stopExamTimer() {
+    if (timerInterval) clearInterval(timerInterval);
+}
+
+function updateTimer() {
+    const elapsed = Math.floor((performance.now() - examStartTime) / 1000);
+    const minutes = Math.floor(elapsed / 60);
+    const seconds = elapsed % 60;
+    const display = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    document.getElementById('timerDisplay').textContent = display;
+}
+
+function getElapsedSeconds() {
+    if (!examStartTime) return 0;
+    return Math.floor((performance.now() - examStartTime) / 1000);
+}
+
+function validateAllQuestionsAnswered() {
+    for (let i = 1; i <= 10; i++) {
+        const qName = `q${i}`;
+        const checked = document.querySelector(`input[name="${qName}"]:checked`);
+        if (!checked) {
+            return false;
+        }
+    }
+    return true;
+}
+
+function submitExam() {
+    // Check if exam started
+    if (!examStartTime) {
+        alert('Error: El temporizador del examen no se inició.');
+        return;
+    }
+
+    // Validate all questions answered
+    if (!validateAllQuestionsAnswered()) {
+        alert('Debe responder todas las 10 preguntas antes de enviar el examen.');
+        return;
+    }
+
+    stopExamTimer();
+
+    // Calculate score
+    let score = 0;
+    let criticalErrors = 0;
+
+    for (let i = 1; i <= 10; i++) {
+        const qName = `q${i}`;
+        const selected = document.querySelector(`input[name="${qName}"]:checked`).value;
+        const correct = examAnswers[qName];
+
+        if (selected === correct) {
+            score++;
+        } else if (criticalQuestions.includes(qName)) {
+            criticalErrors++;
+        }
+    }
+
+    const percentage = Math.round((score / 10) * 100);
+    const timeSeconds = getElapsedSeconds();
+    const passed = percentage >= 70 && criticalErrors === 0;
+
+    // Save to localStorage with hash
+    let state = getState() || {};
+
+    if (!state.scores) state.scores = {};
+    state.scores.fase1 = {
+        score: percentage,
+        attempts: (state.scores.fase1?.attempts || 0) + 1,
+        criticalErrors: criticalErrors,
+        timeSeconds: timeSeconds,
+        passed: passed
+    };
+
+    saveState(state);
+
+    // Show results
+    displayResults(percentage, score, criticalErrors, timeSeconds, passed);
+}
+
+function displayResults(percentage, score, criticalErrors, timeSeconds, passed) {
+    const resultsPanel = document.getElementById('resultsPanel');
+    const resultsPanelContent = document.getElementById('resultsPanelContent');
+    const resultsTitle = document.getElementById('resultsTitle');
+    const resultsScore = document.getElementById('resultsScore');
+    const resultsMessage = document.getElementById('resultsMessage');
+    const resultsCorrect = document.getElementById('resultsCorrect');
+    const resultsCritical = document.getElementById('resultsCritical');
+    const resultsTime = document.getElementById('resultsTime');
+    const submitBtn = document.getElementById('submitBtn');
+    const retryBtn = document.getElementById('retryBtn');
+    const completeBtn = document.getElementById('completeBtn');
+
+    resultsScore.textContent = `${percentage}%`;
+    resultsCorrect.textContent = `${score}/10`;
+    resultsCritical.textContent = criticalErrors;
+
+    const minutes = Math.floor(timeSeconds / 60);
+    const seconds = timeSeconds % 60;
+    resultsTime.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+
+    if (passed) {
+        resultsTitle.textContent = '¡Examen Aprobado!';
+        resultsMessage.textContent = `Felicidades! Ha alcanzado ${percentage}% correcto. Puede proceder a completar la fase.`;
+        resultsPanelContent.classList.remove('fail');
+        completeBtn.disabled = false;
+        retryBtn.style.display = 'none';
+    } else {
+        resultsTitle.textContent = 'Examen No Aprobado';
+        if (percentage >= 70 && criticalErrors > 0) {
+            resultsMessage.textContent = `Has alcanzado el puntaje mínimo, pero cometiste errores en preguntas críticas que comprometen la seguridad. Debes responder correctamente TODAS las preguntas críticas para aprobar.`;
+        } else {
+            resultsMessage.textContent = `Ha obtenido ${percentage}% correcto. Se requiere 70% para aprobar. Reintente el examen.`;
+        }
+        resultsPanelContent.classList.add('fail');
+        completeBtn.disabled = true;
+        retryBtn.style.display = 'block';
+    }
+
+    submitBtn.style.display = 'none';
+    resultsPanel.style.display = 'block';
+
+    // Scroll to results
+    resultsPanel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function retryExam() {
+    // Reset exam
+    for (let i = 1; i <= 10; i++) {
+        const qName = `q${i}`;
+        const radios = document.querySelectorAll(`input[name="${qName}"]`);
+        radios.forEach(r => r.checked = false);
+    }
+
+    // Reset UI
+    document.getElementById('resultsPanel').style.display = 'none';
+    document.getElementById('submitBtn').style.display = 'block';
+    document.getElementById('completeBtn').disabled = true;
+
+    // Restart timer
+    examStartTime = null;
+    startExamTimer();
+
+    // Scroll to exam
+    document.getElementById('examModule').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ════════════════════════════════════════════════════════════
+// PHASE COMPLETION
+// ════════════════════════════════════════════════════════════
+function completePhase(phaseNum) {
+    // Check if exam was passed
+    let state = getState();
+
+    if (!state || !state.scores || !state.scores.fase1 || !state.scores.fase1.passed) {
+        alert('Debe aprobar el examen primero (70% o superior).');
+        return;
+    }
+
+    try {
+        if (!state.completedPhases) state.completedPhases = [];
+        if (!state.completedPhases.includes(phaseNum)) {
+            state.completedPhases.push(phaseNum);
+        }
+        saveState(state);
+        alert('Fase ' + phaseNum + ' completada. Regresando al portal...');
+        window.location.href = 'index.html';
+    } catch(e) {
+        alert('Fase completada.');
+        window.location.href = 'index.html';
+    }
+}
+
+// ════════════════════════════════════════════════════════════
+// INITIALIZATION
+// ════════════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', function() {
+    // Check login
+    if (!checkLogin()) {
+        return;
+    }
+
+    // Start exam timer when page loads (immediately)
+    startExamTimer();
+
+    // Disable complete button until exam passed
+    document.getElementById('completeBtn').disabled = true;
+});
+</script>
+</body>
+</html>

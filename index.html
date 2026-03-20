@@ -1,0 +1,1488 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Protocolo Fortaleza | Sistema de Capacitación NRD-2</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        /* ═══════════════════════════════════════════
+           PROTOCOLO FORTALEZA v2.0 - PORTAL MAESTRO
+           Agencia de Capacitación Élite
+           ═══════════════════════════════════════════ */
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg-primary: #050B14;
+            --bg-card: #0F172A;
+            --bg-card-hover: #162032;
+            --border: #1E293B;
+            --border-active: #3B82F6;
+            --text-primary: #F0F6FC;
+            --text-secondary: #94A3B8;
+            --text-muted: #64748B;
+            --accent-blue: #3B82F6;
+            --accent-cyan: #06B6D4;
+            --accent-green: #10B981;
+            --accent-amber: #F59E0B;
+            --accent-red: #EF4444;
+            --accent-purple: #8B5CF6;
+            --font-display: 'Outfit', sans-serif;
+            --font-body: 'Inter', sans-serif;
+            --radius: 12px;
+            --shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* SCROLLBAR */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg-card); }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--accent-blue); }
+
+        /* HEADER / NAVBAR */
+        .navbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 32px;
+            border-bottom: 1px solid var(--border);
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(12px);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 1.1rem;
+            color: var(--text-primary);
+            text-decoration: none;
+        }
+        .brand-icon {
+            width: 36px; height: 36px;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem;
+        }
+        .brand-accent { color: var(--accent-blue); }
+        .navbar-right {
+            display: flex; align-items: center; gap: 16px;
+        }
+        .level-badge {
+            padding: 6px 16px;
+            border: 1px solid var(--accent-cyan);
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--accent-cyan);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .btn-logout {
+            background: none; border: none;
+            color: var(--text-muted);
+            cursor: pointer; font-size: 0.85rem;
+            font-family: var(--font-body);
+            transition: color 0.2s;
+        }
+        .btn-logout:hover { color: var(--accent-red); }
+
+        /* LAYOUT PRINCIPAL */
+        .main-layout {
+            display: grid;
+            grid-template-columns: 380px 1fr;
+            gap: 0;
+            min-height: calc(100vh - 65px);
+        }
+
+        /* SIDEBAR IZQUIERDO */
+        .sidebar {
+            border-right: 1px solid var(--border);
+            padding: 28px;
+            overflow-y: auto;
+        }
+        .sidebar-section {
+            margin-bottom: 32px;
+        }
+        .sidebar-title {
+            font-family: var(--font-display);
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+        }
+
+        /* FASE ACTIVA CARD */
+        .active-phase-card {
+            background: var(--bg-card);
+            border: 1px solid var(--accent-green);
+            border-radius: var(--radius);
+            padding: 24px;
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.08);
+        }
+        .phase-label {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+        .phase-label-active { background: rgba(16, 185, 129, 0.15); color: var(--accent-green); }
+        .phase-label-locked { background: rgba(100, 116, 139, 0.2); color: var(--text-muted); }
+
+        .active-phase-title {
+            font-family: var(--font-display);
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+        .active-phase-desc {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+        .active-phase-score {
+            font-size: 0.9rem;
+            color: var(--accent-green);
+            margin-bottom: 16px;
+            padding: 12px;
+            background: rgba(16, 185, 129, 0.1);
+            border-left: 3px solid var(--accent-green);
+            border-radius: 4px;
+        }
+
+        /* EXAMEN BUTTON */
+        .btn-exam {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            padding: 14px 18px;
+            background: linear-gradient(135deg, var(--accent-purple), #6D28D9);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-family: var(--font-body);
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+        .btn-exam:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(139, 92, 246, 0.3);
+        }
+        .btn-exam-icon {
+            width: 28px; height: 28px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 6px;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        /* VIDEOTECA */
+        .videoteca-list { list-style: none; }
+        .videoteca-item {
+            display: block;
+            padding: 12px 14px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+        .videoteca-item:hover {
+            background: var(--bg-card);
+            color: var(--accent-cyan);
+            padding-left: 20px;
+            border-left: 3px solid var(--accent-cyan);
+        }
+        .videoteca-num {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            margin-right: 8px;
+        }
+
+        /* AUDIOTECA */
+        .audio-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.82rem;
+            transition: all 0.2s;
+        }
+        .audio-item:hover {
+            background: var(--bg-card);
+            color: var(--accent-amber);
+        }
+        .audio-icon {
+            color: var(--accent-amber);
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+
+        /* CONTENT AREA */
+        .content-area {
+            padding: 28px 32px;
+            overflow-y: auto;
+        }
+
+        /* DESPERTAR LEGAL - SIEMPRE PRIMERO */
+        .legal-gateway {
+            background: linear-gradient(135deg, #0C1222, #162032);
+            border: 1px solid var(--accent-amber);
+            border-radius: var(--radius);
+            padding: 32px;
+            margin-bottom: 28px;
+            position: relative;
+            overflow: hidden;
+        }
+        .legal-gateway::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-amber), var(--accent-red), var(--accent-amber));
+        }
+        .legal-gateway-tag {
+            display: inline-block;
+            padding: 4px 12px;
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--accent-amber);
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 16px;
+        }
+        .legal-gateway h2 {
+            font-family: var(--font-display);
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        .legal-gateway p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+        }
+        .legal-check-box {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+        }
+        .legal-question {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+        .legal-sub {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+        }
+        .legal-btns {
+            display: flex; gap: 12px;
+        }
+        .btn-legal {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-family: var(--font-body);
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-legal-yes {
+            background: var(--accent-green);
+            color: white;
+        }
+        .btn-legal-yes:hover { background: #059669; transform: translateY(-2px); }
+        .btn-legal-no {
+            background: var(--accent-red);
+            color: white;
+        }
+        .btn-legal-no:hover { background: #DC2626; transform: translateY(-2px); }
+
+        /* FASE CARDS */
+        .phases-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .phase-card {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            align-items: center;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 28px;
+            transition: all 0.3s;
+            text-decoration: none;
+            color: inherit;
+            cursor: pointer;
+        }
+        .phase-card.unlocked {
+            border-color: var(--accent-green);
+        }
+        .phase-card.unlocked:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 25px rgba(16, 185, 129, 0.12);
+            background: var(--bg-card-hover);
+        }
+        .phase-card.locked {
+            opacity: 0.4;
+            filter: grayscale(0.8);
+            cursor: not-allowed;
+            background: repeating-linear-gradient(
+                45deg,
+                var(--bg-card),
+                var(--bg-card) 10px,
+                #162032 10px,
+                #162032 20px
+            );
+        }
+        .phase-card.current {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 25px rgba(59, 130, 246, 0.12);
+        }
+
+        .phase-card-info {}
+        .phase-card-tag {
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 8px;
+        }
+        .tag-diagnostic { color: var(--accent-cyan); }
+        .tag-structure { color: var(--accent-blue); }
+        .tag-technical { color: var(--accent-green); }
+        .tag-strategy { color: var(--accent-amber); }
+        .tag-tools { color: var(--accent-purple); }
+
+        .phase-card-title {
+            font-family: var(--font-display);
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+        .phase-card-desc {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+        .phase-card-score {
+            font-size: 0.8rem;
+            color: var(--accent-green);
+            margin-top: 8px;
+            font-weight: 600;
+        }
+        .phase-card-icon {
+            width: 56px; height: 56px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.8rem;
+            opacity: 0.6;
+        }
+        .phase-card.locked .phase-card-icon {
+            font-size: 1.4rem;
+        }
+
+        /* FLASHCARDS SIDEBAR SECTION */
+        .flashcard-mini {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .flashcard-mini:hover {
+            border-color: var(--accent-blue);
+            background: var(--bg-card-hover);
+        }
+        .flashcard-q {
+            font-size: 0.82rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        .flashcard-a {
+            font-size: 0.78rem;
+            color: var(--accent-green);
+            display: none;
+            border-top: 1px solid var(--border);
+            padding-top: 8px;
+            margin-top: 8px;
+        }
+        .flashcard-mini.revealed .flashcard-a { display: block; }
+        .flashcard-hint {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-align: center;
+        }
+
+        /* PROGRESS BAR */
+        .progress-section {
+            margin-bottom: 24px;
+        }
+        .progress-bar-track {
+            width: 100%;
+            height: 6px;
+            background: var(--border);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-cyan));
+            border-radius: 3px;
+            transition: width 0.5s ease;
+        }
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+        .progress-details {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border);
+        }
+        .progress-detail-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+        }
+
+        /* RANKING SECTION */
+        .ranking-section {
+            background: var(--bg-card);
+            border: 1px solid var(--accent-blue);
+            border-radius: var(--radius);
+            padding: 28px;
+            margin-bottom: 28px;
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.08);
+        }
+        .ranking-title {
+            font-family: var(--font-display);
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--accent-blue);
+        }
+        .ranking-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+        .ranking-stat {
+            background: var(--bg-primary);
+            padding: 16px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid var(--border);
+        }
+        .ranking-stat-value {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--accent-cyan);
+            margin-bottom: 4px;
+        }
+        .ranking-stat-label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .ranking-podium {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+        .ranking-position {
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+            text-align: center;
+        }
+        .ranking-medal {
+            font-size: 2.5rem;
+            margin-bottom: 8px;
+        }
+        .ranking-name {
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        .ranking-score-text {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+        .ranking-achievement {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid var(--accent-blue);
+            border-radius: 8px;
+            padding: 16px;
+            text-align: center;
+            color: var(--accent-blue);
+            font-size: 0.85rem;
+            line-height: 1.5;
+        }
+
+        /* NAME INPUT MODAL */
+        .name-modal-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 101;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(12px);
+        }
+        .name-modal-overlay.hidden { display: none; }
+        .name-modal-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 40px;
+            max-width: 420px;
+            width: 90%;
+            text-align: center;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+        .name-modal-box::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-cyan));
+        }
+        .name-modal-title {
+            font-family: var(--font-display);
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+        .name-modal-desc {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 24px;
+        }
+        .name-input {
+            width: 100%;
+            padding: 16px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-family: var(--font-body);
+            font-size: 1rem;
+            margin-bottom: 16px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        .name-input::placeholder {
+            color: var(--text-muted);
+        }
+        .name-input:focus { border-color: var(--accent-blue); }
+        .btn-submit-name {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-family: var(--font-body);
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-submit-name:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+        }
+
+        /* PEDAGOGICAL INFO */
+        .pedagogy-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 4px;
+            font-size: 0.7rem;
+            color: var(--accent-blue);
+            margin-right: 6px;
+            margin-bottom: 6px;
+        }
+
+        /* FOOTER */
+        .footer-info {
+            text-align: center;
+            padding: 20px;
+            border-top: 1px solid var(--border);
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        /* MODAL LOGIN */
+        .login-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(12px);
+        }
+        .login-overlay.hidden { display: none; }
+        .login-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 40px;
+            max-width: 420px;
+            width: 90%;
+            text-align: center;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+        .login-box::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-cyan));
+        }
+        .login-title {
+            font-family: var(--font-display);
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        .login-brand {
+            font-family: var(--font-display);
+            font-size: 2.8rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 32px;
+        }
+        .btn-register {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            padding: 14px;
+            border: 1px solid rgba(6, 182, 212, 0.4);
+            background: none;
+            color: var(--accent-cyan);
+            font-family: var(--font-body);
+            font-size: 0.9rem;
+            font-weight: 700;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            margin-bottom: 20px;
+        }
+        .btn-register:hover {
+            background: var(--accent-cyan);
+            color: var(--bg-primary);
+        }
+        .login-input {
+            width: 100%;
+            padding: 16px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-family: var(--font-body);
+            font-size: 1rem;
+            text-align: center;
+            letter-spacing: 4px;
+            margin-bottom: 12px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        .login-input::placeholder {
+            letter-spacing: 1px;
+            color: var(--text-muted);
+        }
+        .login-input:focus { border-color: var(--accent-blue); }
+        .btn-access {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-family: var(--font-body);
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-access:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+        }
+        .login-error {
+            color: var(--accent-red);
+            font-size: 0.82rem;
+            margin-top: 10px;
+            display: none;
+        }
+
+        /* ANIMATIONS */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-in {
+            animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        .delay-1 { animation-delay: 0.1s; opacity: 0; }
+        .delay-2 { animation-delay: 0.2s; opacity: 0; }
+        .delay-3 { animation-delay: 0.3s; opacity: 0; }
+        .delay-4 { animation-delay: 0.4s; opacity: 0; }
+        .delay-5 { animation-delay: 0.5s; opacity: 0; }
+
+        /* RESPONSIVE */
+        @media (max-width: 900px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+            }
+            .sidebar {
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+            }
+            .ranking-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════
+     LOGIN MODAL
+     ═══════════════════════════════════════════ -->
+<div id="loginOverlay" class="login-overlay">
+    <div class="login-box">
+        <div class="login-title">Acceso Maestro</div>
+        <div class="login-brand">FORTALEZA</div>
+
+        <a href="https://forms.gle/VCTx3hbF3dYouYjq8" target="_blank" class="btn-register">
+            <span>&#128196;</span> 1. Ficha de Registro
+        </a>
+
+        <input type="password" id="accessCode" class="login-input" placeholder="CODIGO DE ACCESO"
+               onkeyup="if(event.key==='Enter')verifyAccess()">
+        <button onclick="verifyAccess()" class="btn-access">Ingresar al Sistema</button>
+        <div id="loginError" class="login-error">Codigo incorrecto. Intente de nuevo.</div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     NAME INPUT MODAL (for ranking)
+     ═══════════════════════════════════════════ -->
+<div id="nameModalOverlay" class="name-modal-overlay hidden">
+    <div class="name-modal-box">
+        <div class="name-modal-title">Registrese en el Ranking</div>
+        <div class="name-modal-desc">Ha completado todas las fases. Ingrese su nombre para registrarse en el ranking de desempeno.</div>
+        <input type="text" id="userFullName" class="name-input" placeholder="Su nombre completo"
+               onkeyup="if(event.key==='Enter')submitNameForRanking()">
+        <button onclick="submitNameForRanking()" class="btn-submit-name">Registrar y Ver Ranking</button>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     NAVBAR
+     ═══════════════════════════════════════════ -->
+<nav class="navbar" id="mainNav" style="display:none;">
+    <a href="#" class="navbar-brand">
+        <div class="brand-icon">&#9889;</div>
+        <span>PROTOCOLO <span class="brand-accent">FORTALEZA</span></span>
+    </a>
+    <div class="navbar-right">
+        <span class="level-badge" id="levelBadge">Nivel 1</span>
+        <button class="btn-logout" onclick="logout()">Salir</button>
+    </div>
+</nav>
+
+<!-- ═══════════════════════════════════════════
+     MAIN LAYOUT
+     ═══════════════════════════════════════════ -->
+<div class="main-layout" id="mainContent" style="display:none;">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+        <!-- PROGRESO GENERAL -->
+        <div class="sidebar-section progress-section">
+            <div class="sidebar-title">Progreso del Programa</div>
+            <div class="progress-text">
+                <span id="progressLabel">Fase 0 de 4</span>
+                <span id="progressPct">0%</span>
+            </div>
+            <div class="progress-bar-track">
+                <div class="progress-bar-fill" id="progressBar" style="width: 0%"></div>
+            </div>
+            <div class="progress-details" id="progressDetails"></div>
+        </div>
+
+        <!-- FASE ACTIVA -->
+        <div class="sidebar-section">
+            <div class="sidebar-title">Fase Activa</div>
+            <div class="active-phase-card" id="activePhaseCard">
+                <span class="phase-label phase-label-active" id="activePhaseLabel">FASE 0: ACTIVA</span>
+                <div class="active-phase-title" id="activePhaseTitle">Normativa NRD-2</div>
+                <div class="active-phase-desc" id="activePhaseDesc">Base legal y cumplimiento de la norma de seguridad.</div>
+                <div class="active-phase-score" id="activePhaseScore" style="display:none;"></div>
+
+                <a href="#" class="btn-exam" id="examBtn">
+                    <span class="btn-exam-icon">&#128221;</span>
+                    <span id="examBtnText">Examen Final (15 Pregs)</span>
+                    <span style="margin-left:auto;">&#8594;</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- METODOLOGIA PEDAGOGICA -->
+        <div class="sidebar-section">
+            <div class="sidebar-title">Metodologia Cientifica</div>
+            <div style="display:flex; flex-wrap:wrap;">
+                <span class="pedagogy-badge">&#129504; Recuperacion Activa</span>
+                <span class="pedagogy-badge">&#128257; Repeticion Espaciada</span>
+                <span class="pedagogy-badge">&#127891; Metacognicion</span>
+                <span class="pedagogy-badge">&#128064; Codificacion Dual</span>
+            </div>
+        </div>
+
+        <!-- VIDEOTECA -->
+        <details class="sidebar-section">
+            <summary class="sidebar-title" style="cursor: pointer; user-select: none;">&#127909; Videoteca Oficial</summary>
+            <ul class="videoteca-list" id="videotecaList">
+                <li><a href="https://www.youtube.com/watch?v=NMixBDBYDxw" target="_blank" class="videoteca-item"><span class="videoteca-num">01.</span> Tutorial Expedientes Virtuales</a></li>
+                <li><a href="https://www.youtube.com/watch?v=cHIe0Ldh7OI" target="_blank" class="videoteca-item"><span class="videoteca-num">02.</span> Seguridad en Edificaciones</a></li>
+                <li><a href="https://www.youtube.com/watch?v=sAR375fRyOU" target="_blank" class="videoteca-item"><span class="videoteca-num">03.</span> Conozca la NRD-2</a></li>
+                <li><a href="https://www.youtube.com/watch?v=ccpEuBltRvU" target="_blank" class="videoteca-item"><span class="videoteca-num">04.</span> Normas Minimas de Seguridad</a></li>
+                <li><a href="https://www.youtube.com/watch?v=E3orxjO2Wm0" target="_blank" class="videoteca-item"><span class="videoteca-num">05.</span> Presentacion Virtual</a></li>
+                <li><a href="https://www.youtube.com/watch?v=DDGuPgj96_A" target="_blank" class="videoteca-item"><span class="videoteca-num">06.</span> Rutas de Evacuacion</a></li>
+            </ul>
+        </details>
+
+        <!-- AUDIOTECA -->
+        <details class="sidebar-section">
+            <summary class="sidebar-title" style="cursor: pointer; user-select: none;">&#127911; Audioteca (Podcasts)</summary>
+            <div id="audiotecaList">
+                <a href="#" class="audio-item"><span class="audio-icon">&#9654;</span> Fase 1: Amenazas y Riesgos</a>
+                <a href="#" class="audio-item"><span class="audio-icon">&#9654;</span> Fase 1: Riesgo Interno o Externo</a>
+                <a href="#" class="audio-item"><span class="audio-icon">&#9654;</span> Fase 2: El Arte de Evacuar</a>
+                <a href="#" class="audio-item"><span class="audio-icon">&#9654;</span> Fase 2: Arquitectura del Caos</a>
+                <a href="#" class="audio-item"><span class="audio-icon">&#9654;</span> Fase 3: Descodificando la NRD-2</a>
+                <a href="#" class="audio-item"><span class="audio-icon">&#9654;</span> Fase 3: NRD-2 Desglosada</a>
+                <a href="#" class="audio-item"><span class="audio-icon">&#9654;</span> Fase 4: Extintores ABC/CO2</a>
+                <a href="#" class="audio-item"><span class="audio-icon">&#9654;</span> Fase 4: Inventario y Stock</a>
+            </div>
+        </details>
+    </aside>
+
+    <!-- CONTENT AREA -->
+    <main class="content-area">
+
+        <!-- ═══════════════════════════════════
+             RANKING SECTION (visible only when all phases complete)
+             ═══════════════════════════════════ -->
+        <div class="ranking-section animate-in" id="rankingSection" style="display:none;">
+            <div class="ranking-title">Desempeno General - Top 3</div>
+
+            <div class="ranking-stats">
+                <div class="ranking-stat">
+                    <div class="ranking-stat-value" id="statOverallScore">0%</div>
+                    <div class="ranking-stat-label">Calificacion Promedio</div>
+                </div>
+                <div class="ranking-stat">
+                    <div class="ranking-stat-value" id="statCriticalErrors">0</div>
+                    <div class="ranking-stat-label">Errores Criticos</div>
+                </div>
+                <div class="ranking-stat">
+                    <div class="ranking-stat-value" id="statTotalTime">0h</div>
+                    <div class="ranking-stat-label">Tiempo Total</div>
+                </div>
+                <div class="ranking-stat">
+                    <div class="ranking-stat-value" id="statPosition">-</div>
+                    <div class="ranking-stat-label">Posicion en Ranking</div>
+                </div>
+            </div>
+
+            <div class="ranking-podium" id="rankingPodium">
+                <!-- Will be populated by JS -->
+            </div>
+
+            <div class="ranking-achievement" id="achievementMessage" style="display:none;">
+                Felicidades. Has clasificado en el Top 3 y eres acreedor de una asesoria personalizada para la elaboracion de tu plan NRD-2.
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════
+             SECCION 0: EL DESPERTAR LEGAL
+             (SIEMPRE PRIMERO - NO SE MUEVE)
+             ═══════════════════════════════════ -->
+        <div class="legal-gateway animate-in" id="legalGateway">
+            <div class="legal-gateway-tag">Fase 0: El Despertar Legal</div>
+            <h2>Sistema de Validacion Normativa</h2>
+            <p>Antes de avanzar al programa de capacitacion, toda unidad debe verificar su estado de cumplimiento con la normativa NRD-2 de CONRED.</p>
+
+            <div class="legal-check-box">
+                <div class="legal-question">&#9888;&#65039; ¿Su unidad cumple con la normativa NRD-2?</div>
+                <div class="legal-sub">Esta verificacion es requisito obligatorio para acceder al programa de capacitacion.</div>
+                <div class="legal-btns">
+                    <button class="btn-legal btn-legal-yes" onclick="legalResponse(true)">Si, Cumple</button>
+                    <button class="btn-legal btn-legal-no" onclick="legalResponse(false)">No, Es Pendiente</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════
+             FLASHCARDS DE MEMORIA
+             ═══════════════════════════════════ -->
+        <div class="sidebar-section animate-in delay-1" style="margin-bottom:28px;">
+            <div class="sidebar-title" style="display:flex; align-items:center; gap:8px;">
+                <span>&#128218;</span> Flashcards de Memoria
+                <span style="font-size:0.65rem; color:var(--text-muted); font-weight:400; margin-left:auto;">Repaso rapido (Disponible siempre)</span>
+            </div>
+            <div id="flashcardsContainer">
+                <div class="flashcard-mini" onclick="this.classList.toggle('revealed')">
+                    <div class="flashcard-q">¿Cual es la formula de Carga de Ocupacion?</div>
+                    <div class="flashcard-a"><strong>CO = Area (m2) / Factor de Uso.</strong> Siempre redondear al entero superior.</div>
+                    <div class="flashcard-hint">Clic para revelar</div>
+                </div>
+                <div class="flashcard-mini" onclick="this.classList.toggle('revealed')">
+                    <div class="flashcard-q">¿Que ancho minimo deben tener las puertas si CO > 50?</div>
+                    <div class="flashcard-a"><strong>110 cm (1.10 m).</strong> Si el calculo da menos, prevalece 110 cm.</div>
+                    <div class="flashcard-hint">Clic para revelar</div>
+                </div>
+                <div class="flashcard-mini" onclick="this.classList.toggle('revealed')">
+                    <div class="flashcard-q">¿Cual es la pendiente maxima para rampas de evacuacion?</div>
+                    <div class="flashcard-a"><strong>8.33%.</strong> Pendientes mayores comprometen la evacuacion de sillas de ruedas.</div>
+                    <div class="flashcard-hint">Clic para revelar</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════
+             FASES DEL PROGRAMA
+             ═══════════════════════════════════ -->
+        <div class="phases-grid">
+
+            <!-- FASE 1 -->
+            <a href="fase-1.html" class="phase-card unlocked animate-in delay-2" id="phase1Card" data-phase="1">
+                <div class="phase-card-info">
+                    <div class="phase-card-tag tag-diagnostic">Fase 1: Diagnostico</div>
+                    <div class="phase-card-title">Simulador de Triaje</div>
+                    <div class="phase-card-desc">Diagnostico de Riesgos Estructurales y Amenazas en tiempo real.</div>
+                    <div class="phase-card-score" id="phase1Score" style="display:none;"></div>
+                </div>
+                <div class="phase-card-icon">&#9888;&#65039;</div>
+            </a>
+
+            <!-- FASE 2 -->
+            <a href="fase-2.html" class="phase-card locked animate-in delay-3" id="phase2Card" data-phase="2">
+                <div class="phase-card-info">
+                    <div class="phase-card-tag tag-structure">Fase 2: Estructura</div>
+                    <div class="phase-card-title">Arquitectura de Respuesta</div>
+                    <div class="phase-card-desc">Pentarquia de Mando y Control de Duplicidad.</div>
+                    <div class="phase-card-score" id="phase2Score" style="display:none;"></div>
+                </div>
+                <div class="phase-card-icon">&#128274;</div>
+            </a>
+
+            <!-- FASE 3 -->
+            <a href="fase-3.html" class="phase-card locked animate-in delay-4" id="phase3Card" data-phase="3">
+                <div class="phase-card-info">
+                    <div class="phase-card-tag tag-technical">Fase 3: Tecnica</div>
+                    <div class="phase-card-title">Ingenieria de Seguridad</div>
+                    <div class="phase-card-desc">Semiotica de Senalizacion y Geometria de Rutas.</div>
+                    <div class="phase-card-score" id="phase3Score" style="display:none;"></div>
+                </div>
+                <div class="phase-card-icon">&#128274;</div>
+            </a>
+
+            <!-- FASE 4 -->
+            <a href="fase-4.html" class="phase-card locked animate-in delay-5" id="phase4Card" data-phase="4">
+                <div class="phase-card-info">
+                    <div class="phase-card-tag tag-strategy">Fase 4: Estrategia</div>
+                    <div class="phase-card-title">Gestion Final</div>
+                    <div class="phase-card-desc">Logistica de Recursos y Certificacion.</div>
+                    <div class="phase-card-score" id="phase4Score" style="display:none;"></div>
+                </div>
+                <div class="phase-card-icon">&#128274;</div>
+            </a>
+
+        </div>
+
+        <!-- FOOTER -->
+        <div class="footer-info" style="margin-top:40px;">
+            Protocolo Fortaleza v2.0 | Agencia de Capacitacion Elite | Arquitectura de la Pericia<br>
+            Basado en evidencia cientifica: Recuperacion Activa, Repeticion Espaciada, Metacognicion
+        </div>
+    </main>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     JAVASCRIPT - SISTEMA MODULAR SEGURO
+     ═══════════════════════════════════════════ -->
+<script>
+(function() {
+    'use strict';
+
+    // ── CONFIGURACION ──
+    const VALID_CODES = ['2025', 'CONRED', 'NRD2', 'FORTALEZA', 'FORTALEZA2025'];
+    const STORAGE_KEY = 'pf_session';
+    const RANKINGS_KEY = 'pf_rankings';
+    const SECURITY_SALT = 'PF_NRD2_2026';
+    const SESSION_TIMEOUT_MS = 24 * 60 * 60 * 1000; // 24 hours
+
+    const PHASES_DATA = [
+        { id: 1, tag: 'Fase 1: Diagnostico', title: 'Simulador de Triaje', desc: 'Diagnostico de Riesgos Estructurales y Amenazas.', href: 'fase-1.html' },
+        { id: 2, tag: 'Fase 2: Estructura', title: 'Arquitectura de Respuesta', desc: 'Pentarquia de Mando y Control de Duplicidad.', href: 'fase-2.html' },
+        { id: 3, tag: 'Fase 3: Tecnica', title: 'Ingenieria de Seguridad', desc: 'Semiotica de Senalizacion y Geometria de Rutas.', href: 'fase-3.html' },
+        { id: 4, tag: 'Fase 4: Estrategia', title: 'Gestion Final', desc: 'Logistica de Recursos y Certificacion.', href: 'fase-4.html' }
+    ];
+
+    // ── HASHING & SECURITY ──
+    function computeHash(data) {
+        const str = SECURITY_SALT + JSON.stringify(data);
+        let hash = 0;
+        for (let i = 0; i < str.length; i++) {
+            const char = str.charCodeAt(i);
+            hash = ((hash << 5) - hash) + char;
+            hash = hash & hash;
+        }
+        return hash.toString(36);
+    }
+
+    function defaultState() {
+        return {
+            loggedIn: false,
+            level: 1,
+            completedPhases: [],
+            phaseScores: {},
+            phaseCriticalErrors: {},
+            phaseTime: {},
+            legalChecked: false,
+            legalComplies: false,
+            lastActivity: performance.now(),
+            userName: null
+        };
+    }
+
+    // ── ESTADO SEGURO ──
+    function getState() {
+        try {
+            const raw = localStorage.getItem(STORAGE_KEY);
+            if (!raw) return defaultState();
+
+            const state = JSON.parse(raw);
+            const storedHash = state._hash;
+            delete state._hash;
+
+            // Verificar integridad
+            if (computeHash(state) !== storedHash) {
+                console.warn('Hash tampering detected - resetting session');
+                alert('Se detectó manipulación de datos. La sesión ha sido reiniciada.');
+                localStorage.removeItem(STORAGE_KEY);
+                return defaultState();
+            }
+
+            // Verificar timeout de sesion (24h)
+            const lastActivity = state.lastActivity || performance.now();
+            if (performance.now() - lastActivity > SESSION_TIMEOUT_MS) {
+                console.warn('Session expired');
+                state.loggedIn = false;
+            }
+
+            state._hash = storedHash;
+            return state;
+        } catch(e) {
+            console.error('Error reading state:', e);
+            return defaultState();
+        }
+    }
+
+    function saveState(state) {
+        try {
+            const stateCopy = { ...state };
+            delete stateCopy._hash;
+            stateCopy._hash = computeHash(stateCopy);
+            stateCopy.lastActivity = performance.now();
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(stateCopy));
+        } catch(e) {
+            console.error('Error saving state:', e);
+        }
+    }
+
+    function getRankings() {
+        try {
+            const raw = localStorage.getItem(RANKINGS_KEY);
+            return raw ? JSON.parse(raw) : [];
+        } catch(e) {
+            return [];
+        }
+    }
+
+    function saveRankings(rankings) {
+        try {
+            localStorage.setItem(RANKINGS_KEY, JSON.stringify(rankings));
+        } catch(e) {
+            console.error('Error saving rankings:', e);
+        }
+    }
+
+    // ── LOGIN ──
+    window.verifyAccess = function() {
+        const input = document.getElementById('accessCode');
+        const error = document.getElementById('loginError');
+        const code = input.value.trim().toUpperCase();
+
+        if (VALID_CODES.includes(code)) {
+            const state = defaultState();
+            state.loggedIn = true;
+            state.lastActivity = performance.now();
+            saveState(state);
+            showDashboard();
+        } else {
+            error.style.display = 'block';
+            input.value = '';
+            input.focus();
+        }
+    };
+
+    window.logout = function() {
+        const state = getState();
+        state.loggedIn = false;
+        saveState(state);
+        location.reload();
+    };
+
+    // ── LEGAL GATEWAY ──
+    window.legalResponse = function(complies) {
+        const state = getState();
+        state.legalChecked = true;
+        state.legalComplies = complies;
+        saveState(state);
+
+        const gw = document.getElementById('legalGateway');
+        if (complies) {
+            gw.innerHTML = `
+                <div class="legal-gateway-tag">Fase 0: Verificado</div>
+                <h2 style="color:var(--accent-green);">&#10004; Cumplimiento Confirmado</h2>
+                <p>Su unidad ha declarado cumplimiento con la NRD-2. Puede acceder al programa de capacitacion completo.</p>
+            `;
+            gw.style.borderColor = 'var(--accent-green)';
+        } else {
+            gw.innerHTML = `
+                <div class="legal-gateway-tag" style="background:rgba(239,68,68,0.15);color:var(--accent-red);">Fase 0: Atencion Requerida</div>
+                <h2 style="color:var(--accent-amber);">&#9888;&#65039; Cumplimiento Pendiente</h2>
+                <p>Su unidad no cumple actualmente con la NRD-2. El programa de capacitacion le guiara para alcanzar el cumplimiento. Puede continuar con la formacion.</p>
+            `;
+            gw.style.borderColor = 'var(--accent-red)';
+        }
+    };
+
+    // ── RANKING SYSTEM ──
+    window.submitNameForRanking = function() {
+        const nameInput = document.getElementById('userFullName');
+        const userName = nameInput.value.trim();
+
+        if (!userName) {
+            alert('Por favor ingrese su nombre completo.');
+            return;
+        }
+
+        const state = getState();
+        state.userName = userName;
+        saveState(state);
+
+        registerUserInRanking();
+        document.getElementById('nameModalOverlay').classList.add('hidden');
+        updateRankingSection();
+    };
+
+    function registerUserInRanking() {
+        const state = getState();
+        const rankings = getRankings();
+
+        const overallScore = calculateOverallScore();
+        const totalErrors = calculateTotalCriticalErrors();
+        const totalTime = calculateTotalTime();
+
+        const newEntry = {
+            name: state.userName,
+            totalScore: overallScore,
+            criticalErrors: totalErrors,
+            totalTime: totalTime,
+            date: new Date().toISOString()
+        };
+
+        rankings.push(newEntry);
+        rankings.sort((a, b) => {
+            if (b.totalScore !== a.totalScore) return b.totalScore - a.totalScore;
+            if (a.criticalErrors !== b.criticalErrors) return a.criticalErrors - b.criticalErrors;
+            return a.totalTime - b.totalTime;
+        });
+
+        saveRankings(rankings.slice(0, 50)); // Keep top 50
+    }
+
+    function calculateOverallScore() {
+        const state = getState();
+        const scores = state.phaseScores || {};
+        const values = Object.values(scores).filter(v => v !== undefined && v !== null);
+        if (values.length === 0) return 0;
+        return Math.round(values.reduce((a, b) => a + b, 0) / values.length);
+    }
+
+    function calculateTotalCriticalErrors() {
+        const state = getState();
+        const errors = state.phaseCriticalErrors || {};
+        return Object.values(errors).reduce((sum, val) => sum + (val || 0), 0);
+    }
+
+    function calculateTotalTime() {
+        const state = getState();
+        const times = state.phaseTime || {};
+        const totalMinutes = Object.values(times).reduce((sum, val) => sum + (val || 0), 0);
+        return Math.round(totalMinutes / 60);
+    }
+
+    function updateRankingSection() {
+        const state = getState();
+        const completed = state.completedPhases || [];
+
+        if (completed.length < 4) {
+            document.getElementById('rankingSection').style.display = 'none';
+            return;
+        }
+
+        document.getElementById('rankingSection').style.display = 'block';
+
+        const overallScore = calculateOverallScore();
+        const totalErrors = calculateTotalCriticalErrors();
+        const totalTime = calculateTotalTime();
+
+        document.getElementById('statOverallScore').textContent = overallScore + '%';
+        document.getElementById('statCriticalErrors').textContent = totalErrors;
+        document.getElementById('statTotalTime').textContent = totalTime + 'h';
+
+        const rankings = getRankings();
+        let userPosition = '-';
+        let inTop3 = false;
+
+        for (let i = 0; i < rankings.length && i < 3; i++) {
+            if (rankings[i].name === state.userName) {
+                userPosition = (i + 1);
+                inTop3 = true;
+                break;
+            }
+        }
+
+        document.getElementById('statPosition').textContent = userPosition;
+
+        const podium = document.getElementById('rankingPodium');
+        podium.innerHTML = '';
+
+        const medals = ['🥇', '🥈', '🥉'];
+        for (let i = 0; i < 3 && i < rankings.length; i++) {
+            const entry = rankings[i];
+            const posDiv = document.createElement('div');
+            posDiv.className = 'ranking-position';
+            posDiv.innerHTML = `
+                <div class="ranking-medal">${medals[i]}</div>
+                <div class="ranking-name">${entry.name}</div>
+                <div class="ranking-score-text">Calificacion: ${entry.totalScore}%</div>
+                <div class="ranking-score-text">Errores: ${entry.criticalErrors}</div>
+            `;
+            podium.appendChild(posDiv);
+        }
+
+        const achievement = document.getElementById('achievementMessage');
+        if (inTop3) {
+            achievement.style.display = 'block';
+        } else {
+            achievement.style.display = 'none';
+        }
+    }
+
+    // ── DASHBOARD ──
+    function showDashboard() {
+        document.getElementById('loginOverlay').classList.add('hidden');
+        document.getElementById('mainNav').style.display = 'flex';
+        document.getElementById('mainContent').style.display = 'grid';
+
+        updateProgress();
+        updatePhaseCards();
+        updateRankingSection();
+    }
+
+    function updateProgress() {
+        const state = getState();
+        const completed = state.completedPhases ? state.completedPhases.length : 0;
+        const total = 4;
+        const pct = Math.round((completed / total) * 100);
+
+        document.getElementById('progressLabel').textContent = `Fase ${completed} de ${total}`;
+        document.getElementById('progressPct').textContent = pct + '%';
+        document.getElementById('progressBar').style.width = pct + '%';
+        document.getElementById('levelBadge').textContent = `Nivel ${Math.min(completed + 1, 4)}`;
+
+        // Update progress details
+        const detailsDiv = document.getElementById('progressDetails');
+        const scores = state.phaseScores || {};
+        let detailsHTML = '';
+
+        for (let i = 1; i <= 4; i++) {
+            if (scores[i]) {
+                detailsHTML += `
+                    <div class="progress-detail-item">
+                        <span>Fase ${i}:</span>
+                        <span>${scores[i]}%</span>
+                    </div>
+                `;
+            }
+        }
+
+        detailsDiv.innerHTML = detailsHTML;
+    }
+
+    function updatePhaseCards() {
+        const state = getState();
+        const completed = state.completedPhases || [];
+        const scores = state.phaseScores || {};
+
+        for (let i = 1; i <= 4; i++) {
+            const card = document.getElementById(`phase${i}Card`);
+            const scoreEl = document.getElementById(`phase${i}Score`);
+            if (!card) continue;
+
+            const isUnlocked = i === 1 || completed.includes(i - 1);
+            const isCompleted = completed.includes(i);
+
+            card.classList.remove('unlocked', 'locked', 'current');
+
+            if (isCompleted) {
+                card.classList.add('unlocked');
+                card.querySelector('.phase-card-icon').innerHTML = '&#10004;&#65039;';
+                if (scores[i]) {
+                    scoreEl.textContent = `Aprobado: ${scores[i]}%`;
+                    scoreEl.style.display = 'block';
+                }
+            } else if (isUnlocked) {
+                card.classList.add('unlocked', 'current');
+                card.querySelector('.phase-card-icon').innerHTML = PHASES_DATA[i-1].id === 1 ? '&#9888;&#65039;' : '&#9889;';
+                scoreEl.style.display = 'none';
+            } else {
+                card.classList.add('locked');
+                card.querySelector('.phase-card-icon').innerHTML = '&#128274;';
+                card.removeAttribute('href');
+                scoreEl.style.display = 'none';
+            }
+        }
+
+        // Update active phase sidebar
+        const currentPhase = completed.length < 4 ? completed.length : 3;
+        const pd = PHASES_DATA[currentPhase];
+        if (pd) {
+            document.getElementById('activePhaseLabel').textContent = pd.tag.toUpperCase() + ': ACTIVA';
+            document.getElementById('activePhaseTitle').textContent = pd.title;
+            document.getElementById('activePhaseDesc').textContent = pd.desc;
+
+            const activePhaseSc = document.getElementById('activePhaseScore');
+            if (scores[currentPhase + 1]) {
+                activePhaseSc.textContent = `Aprobado: ${scores[currentPhase + 1]}%`;
+                activePhaseSc.style.display = 'block';
+            } else {
+                activePhaseSc.style.display = 'none';
+            }
+        }
+
+        // Show ranking modal if all phases complete and user not in rankings
+        if (completed.length === 4 && !state.userName) {
+            document.getElementById('nameModalOverlay').classList.remove('hidden');
+        }
+    }
+
+    // ── INIT ──
+    function init() {
+        const state = getState();
+        if (state.loggedIn) {
+            showDashboard();
+            if (state.legalChecked) {
+                legalResponse(state.legalComplies);
+            }
+        }
+    }
+
+    // Run on load
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+})();
+</script>
+
+</body>
+</html>
