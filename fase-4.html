@@ -816,6 +816,15 @@ function submitExam() {
             timeSeconds: elapsed,
             passed: passed
         };
+
+        // Sync with index.html global metrics
+        if (!state.phaseScores) state.phaseScores = {};
+        if (!state.phaseCriticalErrors) state.phaseCriticalErrors = {};
+        if (!state.phaseTime) state.phaseTime = {};
+        state.phaseScores[4] = score;
+        state.phaseCriticalErrors[4] = criticalErrors;
+        state.phaseTime[4] = elapsed;
+
         saveState(state);
     } catch(e) {}
 

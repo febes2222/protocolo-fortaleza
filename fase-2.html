@@ -958,6 +958,15 @@ function submitExam() {
         timeSeconds: timeSeconds,
         passed: passed
     };
+
+    // Sync with index.html global metrics
+    if (!state.phaseScores) state.phaseScores = {};
+    if (!state.phaseCriticalErrors) state.phaseCriticalErrors = {};
+    if (!state.phaseTime) state.phaseTime = {};
+    state.phaseScores[2] = percentage;
+    state.phaseCriticalErrors[2] = criticalErrors;
+    state.phaseTime[2] = timeSeconds;
+
     saveState(state);
 
     displayResults(percentage, score, criticalErrors, timeSeconds, passed);

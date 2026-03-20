@@ -1127,6 +1127,14 @@ function submitExam() {
         passed: passed
     };
 
+    // Sync with index.html global metrics
+    if (!state.phaseScores) state.phaseScores = {};
+    if (!state.phaseCriticalErrors) state.phaseCriticalErrors = {};
+    if (!state.phaseTime) state.phaseTime = {};
+    state.phaseScores[1] = percentage;
+    state.phaseCriticalErrors[1] = criticalErrors;
+    state.phaseTime[1] = timeSeconds;
+
     saveState(state);
 
     // Show results

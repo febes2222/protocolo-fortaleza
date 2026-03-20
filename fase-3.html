@@ -892,6 +892,15 @@ function submitExam() {
             passed: passed,
             timestamp: new Date().toISOString()
         };
+
+        // Sync with index.html global metrics
+        if (!session.phaseScores) session.phaseScores = {};
+        if (!session.phaseCriticalErrors) session.phaseCriticalErrors = {};
+        if (!session.phaseTime) session.phaseTime = {};
+        session.phaseScores[3] = Math.round(score);
+        session.phaseCriticalErrors[3] = criticalErrors;
+        session.phaseTime[3] = elapsedSeconds;
+
         saveState(session);
     } catch(e) {
         console.error('Error saving score:', e);
